@@ -3413,51 +3413,130 @@ const JS = `class App {
   }
 
   async changeQuestionAuthor(questionId, currentUsername) {
-    const newUsername = prompt(this.t('prompt.enter_new_username', 'Enter new username for this question:'), currentUsername);
-    if (!newUsername || newUsername === currentUsername) return;
-
-    try {
-      const response = await fetch(\`/api/admin/questions/\${questionId}/author\`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: newUsername }),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        this.showAdmin();
-      } else {
-        alert(this.t('error.generic', 'Error') + ': ' + data.error);
-      }
-    } catch (error) {
-      alert(this.t('error.change_author', 'Failed to change author') + ': ' + error.message);
-    }
+    await this.showChangeAuthorModal('question', questionId, currentUsername);
   }
 
   async changeAnswerAuthor(answerId, currentUsername) {
-    const newUsername = prompt(this.t('prompt.enter_new_username', 'Enter new username for this answer:'), currentUsername);
-    if (!newUsername || newUsername === currentUsername) return;
+    await this.showChangeAuthorModal('answer', answerId, currentUsername);
+  }
+
+  async showChangeAuthorModal(type, itemId, currentUsername) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = \`
+      <div class="modal">
+        <h3>\${this.t('modal.change_author', 'Change Author')}</h3>
+        <div style="margin-bottom: 16px; color: #57606a;">
+          \${this.t('label.current_author', 'Current author')}: <strong>\${this.escapeHtml(currentUsername)}</strong>
+        </div>
+        <div id="changeAuthorMessage"></div>
+        <div class="form-group">
+          <label>\${this.t('label.search_username', 'Search username')}</label>
+          <input 
+            type="text" 
+            id="usernameSearch" 
+            placeholder="\${this.t('placeholder.type_to_search', 'Type to search...')}"
+            autocomplete="off"
+            style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
+          <div id="userSearchResults" style="max-height: 200px; overflow-y: auto; border: 1px solid #d0d7de; margin-top: 8px; display: none;"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" onclick="this.closest('.modal-overlay').remove()" class="admin-btn" style="background: var(--border);">\${this.t('button.cancel', 'Cancel')}</button>
+        </div>
+      </div>
+    \`;
+    document.body.appendChild(modal);
+
+    let allUsers = [];
+    let selectedUsername = null;
 
     try {
-      const response = await fetch(\`/api/admin/answers/\${answerId}/author\`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: newUsername }),
-        credentials: 'include'
-      });
-
+      const response = await fetch('/api/admin/users', { credentials: 'include' });
       const data = await response.json();
-      
-      if (response.ok) {
-        this.showAdmin();
-      } else {
-        alert(this.t('error.generic', 'Error') + ': ' + data.error);
-      }
+      allUsers = data.users || [];
     } catch (error) {
-      alert(this.t('error.change_author', 'Failed to change author') + ': ' + error.message);
+      document.getElementById('changeAuthorMessage').innerHTML = 
+        '<div class="error-message">' + this.t('error.load_users', 'Failed to load users') + '</div>';
     }
+
+    const searchInput = document.getElementById('usernameSearch');
+    const resultsDiv = document.getElementById('userSearchResults');
+
+    const filterUsers = (searchTerm) => {
+      const filtered = allUsers.filter(u => 
+        u.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        u.username !== currentUsername
+      );
+
+      if (filtered.length === 0) {
+        resultsDiv.style.display = 'none';
+        return;
+      }
+
+      resultsDiv.innerHTML = filtered.map(u => \`
+        <div class="user-search-item" data-username="\${this.escapeHtml(u.username)}" style="
+          padding: 12px;
+          cursor: pointer;
+          border-bottom: 1px solid #d0d7de;
+          background: #fff;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='#f6f8fa'" onmouseout="this.style.background='#fff'">
+          <strong>\${this.escapeHtml(u.username)}</strong>
+          \${u.name ? \` - \${this.escapeHtml(u.name)}\` : ''}
+          <span style="color: #57606a; margin-left: 8px;">(\${u.email})</span>
+        </div>
+      \`).join('');
+      resultsDiv.style.display = 'block';
+    };
+
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.trim();
+      if (searchTerm.length > 0) {
+        filterUsers(searchTerm);
+      } else {
+        resultsDiv.style.display = 'none';
+      }
+    });
+
+    resultsDiv.addEventListener('click', async (e) => {
+      const item = e.target.closest('.user-search-item');
+      if (!item) return;
+
+      selectedUsername = item.dataset.username;
+      
+      if (selectedUsername === currentUsername) {
+        document.getElementById('changeAuthorMessage').innerHTML = 
+          '<div class="error-message">' + this.t('error.same_author', 'Same author selected') + '</div>';
+        return;
+      }
+
+      const messageEl = document.getElementById('changeAuthorMessage');
+      messageEl.innerHTML = '<div style="color: #0969da;">' + this.t('message.changing_author', 'Changing author...') + '</div>';
+
+      try {
+        const endpoint = type === 'question' 
+          ? \`/api/admin/questions/\${itemId}/author\`
+          : \`/api/admin/answers/\${itemId}/author\`;
+
+        const response = await fetch(endpoint, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: selectedUsername }),
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          modal.remove();
+          this.showAdmin();
+        } else {
+          messageEl.innerHTML = '<div class="error-message">' + this.escapeHtml(data.error) + '</div>';
+        }
+      } catch (error) {
+        messageEl.innerHTML = '<div class="error-message">' + this.t('error.change_author', 'Failed to change author') + ': ' + this.escapeHtml(error.message) + '</div>';
+      }
+    });
   }
 }
 

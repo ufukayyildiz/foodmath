@@ -13,6 +13,12 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Uses `crypto.getRandomValues()` with rejection sampling to eliminate bias
   - Password shown once to admin via alert after successful creation
   - Admin must save the password immediately as it won't be displayed again
+- **IMPROVED**: Change Author modal with username search
+  - Replaced browser prompt with in-app modal dialog
+  - Real-time username search/filter functionality
+  - Shows username, full name, and email for easy identification
+  - Fetches all users from database and filters as admin types
+  - Click to select user and change authorship instantly
 
 ## User Preferences
 None specified yet.
