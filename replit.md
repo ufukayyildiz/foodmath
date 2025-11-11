@@ -19,6 +19,12 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Shows username, full name, and email for easy identification
   - Fetches all users from database and filters as admin types
   - Click to select user and change authorship instantly
+- **IMPORTED**: Bulk user data migration
+  - Imported 6,536 users from CSV files (total: 7,271 users in database)
+  - Matched user_id with email addresses from separate CSV
+  - Converted all usernames to lowercase
+  - Skipped existing users (by ID) to avoid duplicates
+  - Batch insert for efficient import
 
 ## User Preferences
 None specified yet.
