@@ -20,11 +20,17 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Fetches all users from database and filters as admin types
   - Click to select user and change authorship instantly
 - **IMPORTED**: Bulk user data migration
-  - Imported 6,536 users from CSV files (total: 7,271 users in database)
+  - Imported 6,536 users from CSV files (total: 7,270 users in database)
   - Matched user_id with email addresses from separate CSV
   - Converted all usernames to lowercase
   - Skipped existing users (by ID) to avoid duplicates
   - Batch insert for efficient import
+- **IMPORTED**: Bulk question/topic data migration  
+  - Imported 1,464 questions from topics CSV file
+  - Matched user_id with existing users in database
+  - Preserved original creation dates from topics
+  - Decoded HTML entities in titles and content
+  - Skipped 6 questions with invalid user references
 
 ## User Preferences
 None specified yet.
