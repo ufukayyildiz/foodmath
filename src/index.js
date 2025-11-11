@@ -169,6 +169,32 @@ function validateUsername(username) {
   return null;
 }
 
+function validateEmail(email) {
+  if (!email) return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+function generatePassword() {
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const charsLength = chars.length;
+  const maxValid = 256 - (256 % charsLength);
+  let password = '';
+  
+  while (password.length < 8) {
+    const randomValues = new Uint8Array(8);
+    crypto.getRandomValues(randomValues);
+    
+    for (let i = 0; i < randomValues.length && password.length < 8; i++) {
+      if (randomValues[i] < maxValid) {
+        password += chars.charAt(randomValues[i] % charsLength);
+      }
+    }
+  }
+  
+  return password;
+}
+
 async function handleRegister(request, env, corsHeaders) {
   try {
     const { email, password, username } = await request.json();
@@ -1100,10 +1126,10 @@ async function handleAdminCreateUser(request, env, corsHeaders) {
       });
     }
 
-    const { email, username, password, name, role } = await request.json();
+    const { email, username, name, role } = await request.json();
     
-    if (!email || !username || !password) {
-      return new Response(JSON.stringify({ error: 'Email, username, and password are required' }), {
+    if (!email || !username) {
+      return new Response(JSON.stringify({ error: 'Email and username are required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -1138,13 +1164,15 @@ async function handleAdminCreateUser(request, env, corsHeaders) {
       });
     }
 
+    // Auto-generate 8-character password
+    const password = generatePassword();
     const passwordHash = await hashPassword(password);
     
     await env.DB.prepare(
       'INSERT INTO users (email, username, password_hash, role, name) VALUES (?, ?, ?, ?, ?)'
     ).bind(email, username, passwordHash, userRole, name || null).run();
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, password }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
@@ -3330,10 +3358,6 @@ const JS = `class App {
             <input type="email" id="newEmail" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
           </div>
           <div class="form-group">
-            <label>\${this.t('label.password', 'Password')}</label>
-            <input type="password" id="newPassword" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
-          </div>
-          <div class="form-group">
             <label>\${this.t('label.name', 'Name')} (\${this.t('label.optional', 'Optional')})</label>
             <input type="text" id="newName" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
           </div>
@@ -3363,7 +3387,6 @@ const JS = `class App {
     const messageEl = document.getElementById('addUserMessage');
     const username = document.getElementById('newUsername').value;
     const email = document.getElementById('newEmail').value;
-    const password = document.getElementById('newPassword').value;
     const name = document.getElementById('newName').value;
     const role = document.getElementById('newRole').value;
 
@@ -3371,13 +3394,14 @@ const JS = `class App {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, name: name || null, role }),
+        body: JSON.stringify({ username, email, name: name || null, role }),
         credentials: 'include'
       });
 
       const data = await response.json();
       
       if (response.ok) {
+        alert(\`User created successfully!\\n\\nUsername: \${username}\\nPassword: \${data.password}\\n\\nPlease save this password - it won't be shown again.\`);
         modal.remove();
         this.showAdmin();
       } else {

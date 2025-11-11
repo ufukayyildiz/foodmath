@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-l0jv6h/checked-fetch.js
+// .wrangler/tmp/bundle-CxvQyY/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -161,6 +161,29 @@ function validateUsername(username) {
   return null;
 }
 __name(validateUsername, "validateUsername");
+function validateEmail(email) {
+  if (!email) return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+__name(validateEmail, "validateEmail");
+function generatePassword() {
+  const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const charsLength = chars.length;
+  const maxValid = 256 - 256 % charsLength;
+  let password = "";
+  while (password.length < 8) {
+    const randomValues = new Uint8Array(8);
+    crypto.getRandomValues(randomValues);
+    for (let i = 0; i < randomValues.length && password.length < 8; i++) {
+      if (randomValues[i] < maxValid) {
+        password += chars.charAt(randomValues[i] % charsLength);
+      }
+    }
+  }
+  return password;
+}
+__name(generatePassword, "generatePassword");
 async function handleRegister(request, env, corsHeaders) {
   try {
     const { email, password, username } = await request.json();
@@ -978,9 +1001,9 @@ async function handleAdminCreateUser(request, env, corsHeaders) {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
-    const { email, username, password, name, role } = await request.json();
-    if (!email || !username || !password) {
-      return new Response(JSON.stringify({ error: "Email, username, and password are required" }), {
+    const { email, username, name, role } = await request.json();
+    if (!email || !username) {
+      return new Response(JSON.stringify({ error: "Email and username are required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
@@ -1006,11 +1029,12 @@ async function handleAdminCreateUser(request, env, corsHeaders) {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
+    const password = generatePassword();
     const passwordHash = await hashPassword(password);
     await env.DB.prepare(
       "INSERT INTO users (email, username, password_hash, role, name) VALUES (?, ?, ?, ?, ?)"
     ).bind(email, username, passwordHash, userRole, name || null).run();
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, password }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
   } catch (error) {
@@ -3060,10 +3084,6 @@ var JS = `class App {
             <input type="email" id="newEmail" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
           </div>
           <div class="form-group">
-            <label>\${this.t('label.password', 'Password')}</label>
-            <input type="password" id="newPassword" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
-          </div>
-          <div class="form-group">
             <label>\${this.t('label.name', 'Name')} (\${this.t('label.optional', 'Optional')})</label>
             <input type="text" id="newName" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
           </div>
@@ -3093,7 +3113,6 @@ var JS = `class App {
     const messageEl = document.getElementById('addUserMessage');
     const username = document.getElementById('newUsername').value;
     const email = document.getElementById('newEmail').value;
-    const password = document.getElementById('newPassword').value;
     const name = document.getElementById('newName').value;
     const role = document.getElementById('newRole').value;
 
@@ -3101,13 +3120,14 @@ var JS = `class App {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, name: name || null, role }),
+        body: JSON.stringify({ username, email, name: name || null, role }),
         credentials: 'include'
       });
 
       const data = await response.json();
       
       if (response.ok) {
+        alert(\`User created successfully!\\n\\nUsername: \${username}\\nPassword: \${data.password}\\n\\nPlease save this password - it won't be shown again.\`);
         modal.remove();
         this.showAdmin();
       } else {
@@ -3187,7 +3207,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-l0jv6h/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-CxvQyY/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3218,7 +3238,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-l0jv6h/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-CxvQyY/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
