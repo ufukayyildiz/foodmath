@@ -1,0 +1,226 @@
+2025-11-08T14:41:24.589Z	Initializing build environment...
+2025-11-08T14:41:26.253Z	Success: Finished initializing build environment
+2025-11-08T14:41:26.668Z	Cloning repository...
+2025-11-08T14:41:27.996Z	Restoring from dependencies cache
+2025-11-08T14:41:27.997Z	Restoring from build output cache
+2025-11-08T14:41:28.000Z	Detected the following tools from environment: npm@10.9.2, nodejs@22.16.0
+2025-11-08T14:41:29.016Z	Success: Dependencies restored from build cache.
+2025-11-08T14:41:29.200Z	Installing project dependencies: npm clean-install --progress=false
+2025-11-08T14:41:31.507Z	npm warn deprecated rollup-plugin-inject@3.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-inject.
+2025-11-08T14:41:31.521Z	npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+2025-11-08T14:41:33.166Z	
+2025-11-08T14:41:33.166Z	added 61 packages, and audited 62 packages in 3s
+2025-11-08T14:41:33.166Z	
+2025-11-08T14:41:33.166Z	8 packages are looking for funding
+2025-11-08T14:41:33.166Z	  run `npm fund` for details
+2025-11-08T14:41:33.192Z	
+2025-11-08T14:41:33.192Z	2 moderate severity vulnerabilities
+2025-11-08T14:41:33.192Z	
+2025-11-08T14:41:33.192Z	To address all issues (including breaking changes), run:
+2025-11-08T14:41:33.192Z	  npm audit fix --force
+2025-11-08T14:41:33.192Z	
+2025-11-08T14:41:33.192Z	Run `npm audit` for details.
+2025-11-08T14:41:33.402Z	Executing user deploy command: npm run deploy
+2025-11-08T14:41:33.617Z	
+2025-11-08T14:41:33.618Z	> qa-platform@1.0.0 deploy
+2025-11-08T14:41:33.618Z	> npm run db:migrate:remote && npm run db:seed:remote && wrangler deploy
+2025-11-08T14:41:33.618Z	
+2025-11-08T14:41:33.750Z	
+2025-11-08T14:41:33.750Z	> qa-platform@1.0.0 db:migrate:remote
+2025-11-08T14:41:33.750Z	> wrangler d1 execute qa --remote --file=./migrations/schema.sql && wrangler d1 execute qa --remote --file=./migrations/002_add_auth.sql && wrangler d1 execute qa --remote --file=./migrations/003_seed_admin.sql && wrangler d1 execute qa --remote --file=./migrations/004_add_username.sql && wrangler d1 execute qa --remote --file=./migrations/005_add_user_attribution.sql && wrangler d1 execute qa --remote --file=./migrations/006_add_site_settings.sql
+2025-11-08T14:41:33.751Z	
+2025-11-08T14:41:34.534Z	
+2025-11-08T14:41:34.535Z	 ⛅️ wrangler 3.114.15 (update available 4.46.0)
+2025-11-08T14:41:34.535Z	-----------------------------------------------
+2025-11-08T14:41:34.535Z	
+2025-11-08T14:41:40.005Z	▲ [WARNING] The version of Wrangler you are using is now out-of-date.
+2025-11-08T14:41:40.005Z	
+2025-11-08T14:41:40.006Z	  Please update to the latest version to prevent critical errors.
+2025-11-08T14:41:40.006Z	  Run `npm install --save-dev wrangler@4` to update to the latest version.
+2025-11-08T14:41:40.006Z	  After installation, run Wrangler with `npx wrangler`.
+2025-11-08T14:41:40.006Z	
+2025-11-08T14:41:40.006Z	
+2025-11-08T14:41:40.014Z	▲ [WARNING] ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
+2025-11-08T14:41:40.014Z	
+2025-11-08T14:41:40.014Z	
+2025-11-08T14:41:40.018Z	🌀 Executing on remote database qa (ff1d0f19-2197-4863-aa61-ab2a36a002da):
+2025-11-08T14:41:40.018Z	🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+2025-11-08T14:41:40.027Z	Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+2025-11-08T14:41:40.028Z	├ Checking if file needs uploading
+2025-11-08T14:41:42.432Z	│
+2025-11-08T14:41:42.432Z	🌀 File already uploaded. Processing.
+2025-11-08T14:41:42.432Z	🌀 Starting import...
+2025-11-08T14:41:42.441Z	🌀 Processed 5 queries.
+2025-11-08T14:41:42.441Z	🚣 Executed 5 queries in 0.00 seconds (0 rows read, 0 rows written)
+2025-11-08T14:41:42.441Z	   Database is currently at bookmark 00000013-00000004-00004fb0-cd3dabf08446187ccf069f48821a5ee9.
+2025-11-08T14:41:42.441Z	[
+2025-11-08T14:41:42.441Z	  {
+2025-11-08T14:41:42.441Z	    "results": [
+2025-11-08T14:41:42.441Z	      {
+2025-11-08T14:41:42.441Z	        "Total queries executed": 5,
+2025-11-08T14:41:42.441Z	        "Rows read": 0,
+2025-11-08T14:41:42.441Z	        "Rows written": 0,
+2025-11-08T14:41:42.441Z	        "Database size (MB)": "0.07"
+2025-11-08T14:41:42.441Z	      }
+2025-11-08T14:41:42.442Z	    ],
+2025-11-08T14:41:42.442Z	    "success": true,
+2025-11-08T14:41:42.442Z	    "finalBookmark": "00000013-00000004-00004fb0-cd3dabf08446187ccf069f48821a5ee9",
+2025-11-08T14:41:42.442Z	    "meta": {
+2025-11-08T14:41:42.442Z	      "served_by": "v3-prod",
+2025-11-08T14:41:42.442Z	      "served_by_region": "WEUR",
+2025-11-08T14:41:42.442Z	      "served_by_primary": true,
+2025-11-08T14:41:42.442Z	      "timings": {
+2025-11-08T14:41:42.442Z	        "sql_duration_ms": 2.86
+2025-11-08T14:41:42.442Z	      },
+2025-11-08T14:41:42.442Z	      "duration": 2.86,
+2025-11-08T14:41:42.442Z	      "changes": 1,
+2025-11-08T14:41:42.442Z	      "last_row_id": 0,
+2025-11-08T14:41:42.442Z	      "changed_db": true,
+2025-11-08T14:41:42.442Z	      "size_after": 73728,
+2025-11-08T14:41:42.442Z	      "rows_read": 0,
+2025-11-08T14:41:42.442Z	      "rows_written": 0,
+2025-11-08T14:41:42.442Z	      "num_tables": 5,
+2025-11-08T14:41:42.442Z	      "total_attempts": 1
+2025-11-08T14:41:42.442Z	    }
+2025-11-08T14:41:42.442Z	  }
+2025-11-08T14:41:42.442Z	]
+2025-11-08T14:41:42.920Z	
+2025-11-08T14:41:42.920Z	 ⛅️ wrangler 3.114.15 (update available 4.46.0)
+2025-11-08T14:41:42.920Z	-----------------------------------------------
+2025-11-08T14:41:42.920Z	
+2025-11-08T14:41:42.963Z	▲ [WARNING] The version of Wrangler you are using is now out-of-date.
+2025-11-08T14:41:42.964Z	
+2025-11-08T14:41:42.964Z	  Please update to the latest version to prevent critical errors.
+2025-11-08T14:41:42.964Z	  Run `npm install --save-dev wrangler@4` to update to the latest version.
+2025-11-08T14:41:42.964Z	  After installation, run Wrangler with `npx wrangler`.
+2025-11-08T14:41:42.964Z	
+2025-11-08T14:41:42.964Z	
+2025-11-08T14:41:42.970Z	▲ [WARNING] ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
+2025-11-08T14:41:42.970Z	
+2025-11-08T14:41:42.970Z	
+2025-11-08T14:41:42.971Z	🌀 Executing on remote database qa (ff1d0f19-2197-4863-aa61-ab2a36a002da):
+2025-11-08T14:41:42.971Z	🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+2025-11-08T14:41:42.998Z	Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+2025-11-08T14:41:42.998Z	├ Checking if file needs uploading
+2025-11-08T14:41:43.681Z	│
+2025-11-08T14:41:43.686Z	🌀 File already uploaded. Processing.
+2025-11-08T14:41:43.686Z	🌀 Starting import...
+2025-11-08T14:41:43.686Z	🌀 Processed 5 queries.
+2025-11-08T14:41:43.686Z	🚣 Executed 5 queries in 0.00 seconds (0 rows read, 0 rows written)
+2025-11-08T14:41:43.686Z	   Database is currently at bookmark 00000013-00000008-00004fb0-ad7b36201590874b42e5cf0deefb7ef9.
+2025-11-08T14:41:43.687Z	[
+2025-11-08T14:41:43.687Z	  {
+2025-11-08T14:41:43.687Z	    "results": [
+2025-11-08T14:41:43.687Z	      {
+2025-11-08T14:41:43.687Z	        "Total queries executed": 5,
+2025-11-08T14:41:43.687Z	        "Rows read": 0,
+2025-11-08T14:41:43.687Z	        "Rows written": 0,
+2025-11-08T14:41:43.687Z	        "Database size (MB)": "0.07"
+2025-11-08T14:41:43.687Z	      }
+2025-11-08T14:41:43.687Z	    ],
+2025-11-08T14:41:43.687Z	    "success": true,
+2025-11-08T14:41:43.687Z	    "finalBookmark": "00000013-00000008-00004fb0-ad7b36201590874b42e5cf0deefb7ef9",
+2025-11-08T14:41:43.687Z	    "meta": {
+2025-11-08T14:41:43.687Z	      "served_by": "v3-prod",
+2025-11-08T14:41:43.687Z	      "served_by_region": "WEUR",
+2025-11-08T14:41:43.687Z	      "served_by_primary": true,
+2025-11-08T14:41:43.687Z	      "timings": {
+2025-11-08T14:41:43.688Z	        "sql_duration_ms": 1.942
+2025-11-08T14:41:43.688Z	      },
+2025-11-08T14:41:43.688Z	      "duration": 1.942,
+2025-11-08T14:41:43.688Z	      "changes": 1,
+2025-11-08T14:41:43.688Z	      "last_row_id": 0,
+2025-11-08T14:41:43.688Z	      "changed_db": true,
+2025-11-08T14:41:43.688Z	      "size_after": 73728,
+2025-11-08T14:41:43.688Z	      "rows_read": 0,
+2025-11-08T14:41:43.688Z	      "rows_written": 0,
+2025-11-08T14:41:43.688Z	      "num_tables": 5,
+2025-11-08T14:41:43.688Z	      "total_attempts": 1
+2025-11-08T14:41:43.688Z	    }
+2025-11-08T14:41:43.688Z	  }
+2025-11-08T14:41:43.688Z	]
+2025-11-08T14:41:44.219Z	
+2025-11-08T14:41:44.220Z	 ⛅️ wrangler 3.114.15 (update available 4.46.0)
+2025-11-08T14:41:44.220Z	-----------------------------------------------
+2025-11-08T14:41:44.220Z	
+2025-11-08T14:41:44.275Z	▲ [WARNING] The version of Wrangler you are using is now out-of-date.
+2025-11-08T14:41:44.275Z	
+2025-11-08T14:41:44.275Z	  Please update to the latest version to prevent critical errors.
+2025-11-08T14:41:44.275Z	  Run `npm install --save-dev wrangler@4` to update to the latest version.
+2025-11-08T14:41:44.275Z	  After installation, run Wrangler with `npx wrangler`.
+2025-11-08T14:41:44.275Z	
+2025-11-08T14:41:44.275Z	
+2025-11-08T14:41:44.298Z	▲ [WARNING] ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
+2025-11-08T14:41:44.298Z	
+2025-11-08T14:41:44.298Z	
+2025-11-08T14:41:44.299Z	🌀 Executing on remote database qa (ff1d0f19-2197-4863-aa61-ab2a36a002da):
+2025-11-08T14:41:44.299Z	🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+2025-11-08T14:41:44.303Z	Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+2025-11-08T14:41:44.303Z	├ Checking if file needs uploading
+2025-11-08T14:41:44.980Z	│
+2025-11-08T14:41:44.980Z	🌀 File already uploaded. Processing.
+2025-11-08T14:41:44.980Z	🌀 Starting import...
+2025-11-08T14:41:44.980Z	🌀 Processed 1 queries.
+2025-11-08T14:41:44.980Z	🚣 Executed 1 queries in 0.00 seconds (0 rows read, 0 rows written)
+2025-11-08T14:41:44.980Z	   Database is currently at bookmark 00000013-0000000c-00004fb0-c0df139b22a2d0d39b44b3e1e53cbe6c.
+2025-11-08T14:41:44.980Z	[
+2025-11-08T14:41:44.981Z	  {
+2025-11-08T14:41:44.981Z	    "results": [
+2025-11-08T14:41:44.981Z	      {
+2025-11-08T14:41:44.981Z	        "Total queries executed": 1,
+2025-11-08T14:41:44.981Z	        "Rows read": 0,
+2025-11-08T14:41:44.981Z	        "Rows written": 0,
+2025-11-08T14:41:44.981Z	        "Database size (MB)": "0.07"
+2025-11-08T14:41:44.981Z	      }
+2025-11-08T14:41:44.981Z	    ],
+2025-11-08T14:41:44.982Z	    "success": true,
+2025-11-08T14:41:44.982Z	    "finalBookmark": "00000013-0000000c-00004fb0-c0df139b22a2d0d39b44b3e1e53cbe6c",
+2025-11-08T14:41:44.982Z	    "meta": {
+2025-11-08T14:41:44.982Z	      "served_by": "v3-prod",
+2025-11-08T14:41:44.982Z	      "served_by_region": "WEUR",
+2025-11-08T14:41:44.982Z	      "served_by_primary": true,
+2025-11-08T14:41:44.982Z	      "timings": {
+2025-11-08T14:41:44.982Z	        "sql_duration_ms": 1.9788
+2025-11-08T14:41:44.982Z	      },
+2025-11-08T14:41:44.982Z	      "duration": 1.9788,
+2025-11-08T14:41:44.982Z	      "changes": 1,
+2025-11-08T14:41:44.982Z	      "last_row_id": 0,
+2025-11-08T14:41:44.982Z	      "changed_db": true,
+2025-11-08T14:41:44.982Z	      "size_after": 73728,
+2025-11-08T14:41:44.982Z	      "rows_read": 0,
+2025-11-08T14:41:44.982Z	      "rows_written": 0,
+2025-11-08T14:41:44.982Z	      "num_tables": 5,
+2025-11-08T14:41:44.982Z	      "total_attempts": 1
+2025-11-08T14:41:44.982Z	    }
+2025-11-08T14:41:44.982Z	  }
+2025-11-08T14:41:44.982Z	]
+2025-11-08T14:41:45.553Z	
+2025-11-08T14:41:45.553Z	 ⛅️ wrangler 3.114.15 (update available 4.46.0)
+2025-11-08T14:41:45.553Z	-----------------------------------------------
+2025-11-08T14:41:45.553Z	
+2025-11-08T14:41:45.606Z	▲ [WARNING] The version of Wrangler you are using is now out-of-date.
+2025-11-08T14:41:45.606Z	
+2025-11-08T14:41:45.607Z	  Please update to the latest version to prevent critical errors.
+2025-11-08T14:41:45.607Z	  Run `npm install --save-dev wrangler@4` to update to the latest version.
+2025-11-08T14:41:45.607Z	  After installation, run Wrangler with `npx wrangler`.
+2025-11-08T14:41:45.607Z	
+2025-11-08T14:41:45.607Z	
+2025-11-08T14:41:45.629Z	▲ [WARNING] ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
+2025-11-08T14:41:45.629Z	
+2025-11-08T14:41:45.629Z	
+2025-11-08T14:41:45.630Z	🌀 Executing on remote database qa (ff1d0f19-2197-4863-aa61-ab2a36a002da):
+2025-11-08T14:41:45.630Z	🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+2025-11-08T14:41:45.638Z	Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+2025-11-08T14:41:45.638Z	├ Checking if file needs uploading
+2025-11-08T14:41:46.255Z	│
+2025-11-08T14:41:46.255Z	🌀 File already uploaded. Processing.
+2025-11-08T14:41:46.255Z	
+2025-11-08T14:41:46.257Z	✘ [ERROR] duplicate column name: username: SQLITE_ERROR
+2025-11-08T14:41:46.257Z	
+2025-11-08T14:41:46.257Z	
+2025-11-08T14:41:46.257Z	If you think this is a bug then please create an issue at https://github.com/cloudflare/workers-sdk/issues/new/choose
+2025-11-08T14:41:46.258Z	Note that there is a newer version of Wrangler available (4.46.0). Consider checking whether upgrading resolves this error.
+2025-11-08T14:41:46.260Z	? Would you like to report this error to Cloudflare? Wrangler's output and the error details will be shared with the Wrangler team to help us diagnose and fix the issue.
+2025-11-08T14:41:46.260Z	🤖 Using fallback value in non-interactive context: no
+2025-11-08T14:41:46.286Z	🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2025-11-08_14-41-45_417.log"
+2025-11-08T14:41:46.335Z	Failed: error occurred while running deploy command

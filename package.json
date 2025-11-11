@@ -1,0 +1,23 @@
+{
+  "name": "foodmath",
+  "version": "1.0.0",
+  "description": "Food science Q&A platform on Cloudflare Workers with D1",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev --remote",
+    "deploy": "wrangler deploy"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "foodmath",
+    "food-science",
+    "questions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.46.0"
+  }
+}

@@ -1,0 +1,26 @@
+name = "foodmath"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[dev]
+port = 5000
+ip = "0.0.0.0"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "foodmath"
+database_id = "3f5d6426-1f86-4f4f-94bd-5a8de12b0af9"
+
+[[routes]]
+pattern = "foodmath.net"
+custom_domain = true
+
+[observability]
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
+
+[placement]
+mode = "smart"
