@@ -36,6 +36,15 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Now shows: Prev | 1 ... 3 4 5 6 7 ... 245 | Next
   - Added ellipsis styling for better UX
   - Maintains 6 questions per page as designed
+- **IMPORTED**: Bulk answer data migration (PARTIAL - IN PROGRESS)
+  - CSV contains 8,808 total posts: 2,456 questions + 6,352 answers
+  - Successfully imported 4,938 answers (77.7% of total)
+  - Matched with 1,116 questions in database
+  - Matched user_id with existing users (5,411 valid)
+  - Set invalid user_id to NULL for 16 answers
+  - Import status: 10/11 batches successful (91% success rate)
+  - Remaining: 1,414 answers to import (batch-001 failed + unmatched questions)
+  - Answers display correctly with username and date
 
 ## User Preferences
 None specified yet.
