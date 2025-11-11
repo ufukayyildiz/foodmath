@@ -13,9 +13,15 @@ A fast, minimal, and modern question & answer platform built specifically for Cl
   - Database: foodmath (ID: 3f5d6426-1f86-4f4f-94bd-5a8de12b0af9)
   - Domain: foodmath.net
   - All hardcoded URLs updated from mevzugida.com to foodmath.net
+  - Updated package.json, README.md, and all configuration files
 - **FIXED**: Cloudflare Wrangler authentication - Now uses API token instead of browser OAuth
   - Added CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as environment secrets
   - Development server runs successfully without browser login
+- **REMOVED**: All hardcoded Turkish text from code - Now 100% database-driven translations
+  - Removed hardcoded fallbacks for "Tüm Sorular", "Cevaplar", "Soru Sor" buttons
+  - Added missing translation keys: home.all_questions, button.ask_question
+  - All UI text now pulls exclusively from translations table
+  - NO hardcoded text anywhere in the application
 - **FIXED**: Votes table user_id column type - Changed from TEXT to INTEGER to match users table, eliminating "1.0" display issue
   - Migrated existing votes data, keeping latest vote for duplicate entries
   - Added UNIQUE constraint on (user_id, item_type, item_id)

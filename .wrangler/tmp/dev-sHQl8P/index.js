@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-WVZysG/checked-fetch.js
+// .wrangler/tmp/bundle-uGyp3B/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -1243,9 +1243,9 @@ async function renderHomePage(env, page, corsHeaders) {
     const bodyContent = `
       <div class="questions-container">
         <div class="questions-header">
-          <h2>${translations["home.all_questions"] || "T\xFCm Sorular"} (${total})</h2>
+          <h2>${translations["home.all_questions"]} (${total})</h2>
           <button id="askQuestionBtn" class="btn-primary">
-            ${translations["button.ask_question"] || "Soru Sor"}
+            ${translations["button.ask_question"]}
           </button>
         </div>
         <div class="questions-list">
@@ -2133,10 +2133,10 @@ var JS = `class App {
         </div>
 
         <div class="admin-tabs">
-          <button class="admin-tab active" onclick="app.switchAdminTab('settings')">\${this.t('admin.tab_settings', 'Ayarlar')}</button>
-          <button class="admin-tab" onclick="app.switchAdminTab('users')">\${this.t('admin.tab_users', 'Kullan\u0131c\u0131lar')}</button>
-          <button class="admin-tab" onclick="app.switchAdminTab('questions')">\${this.t('admin.tab_questions', 'Sorular')}</button>
-          <button class="admin-tab" onclick="app.switchAdminTab('answers')">\${this.t('admin.tab_answers', 'Cevaplar')}</button>
+          <button class="admin-tab active" onclick="app.switchAdminTab('settings')">\${this.t('admin.tab_settings')}</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('users')">\${this.t('admin.tab_users')}</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('questions')">\${this.t('admin.tab_questions')}</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('answers')">\${this.t('admin.tab_answers')}</button>
         </div>
 
         <div id="admin-settings" class="admin-content active">
@@ -2201,7 +2201,7 @@ var JS = `class App {
 
         <div id="admin-questions" class="admin-content">
           <div class="admin-card">
-            <h3>\${this.t('admin.all_questions', 'T\xFCm Sorular')} (\${questions.questions.length})</h3>
+            <h3>\${this.t('admin.all_questions')} (\${questions.questions.length})</h3>
             <table class="admin-table">
               <thead>
                 <tr>
@@ -2234,7 +2234,7 @@ var JS = `class App {
 
         <div id="admin-answers" class="admin-content">
           <div class="admin-card">
-            <h3>\${this.t('admin.all_answers', 'T\xFCm Cevaplar')} (\${answers.answers.length})</h3>
+            <h3>\${this.t('admin.all_answers')} (\${answers.answers.length})</h3>
             <table class="admin-table">
               <thead>
                 <tr>
@@ -2435,7 +2435,7 @@ var JS = `class App {
     modal.innerHTML = \`
       <div class="modal" style="min-width: 600px; position: relative;">
         <button onclick="this.closest('.modal-overlay').remove()" style="position: absolute; top: 16px; right: 16px; background: #d1242f; color: #fff; border: none; width: 32px; height: 32px; font-size: 20px; font-weight: 700; cursor: pointer; line-height: 1; padding: 0;">\xD7</button>
-        <h3>\${this.t('modal.ask_question', 'Soru Sor')}</h3>
+        <h3>\${this.t('modal.ask_question')}</h3>
         <div id="questionModalMessage"></div>
         <form id="questionModalForm">
           <div class="form-group">
@@ -2926,7 +2926,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-WVZysG/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-uGyp3B/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -2957,7 +2957,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-WVZysG/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-uGyp3B/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

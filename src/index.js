@@ -1433,9 +1433,9 @@ async function renderHomePage(env, page, corsHeaders) {
     const bodyContent = `
       <div class="questions-container">
         <div class="questions-header">
-          <h2>${translations['home.all_questions'] || 'Tüm Sorular'} (${total})</h2>
+          <h2>${translations['home.all_questions']} (${total})</h2>
           <button id="askQuestionBtn" class="btn-primary">
-            ${translations['button.ask_question'] || 'Soru Sor'}
+            ${translations['button.ask_question']}
           </button>
         </div>
         <div class="questions-list">
@@ -2375,10 +2375,10 @@ const JS = `class App {
         </div>
 
         <div class="admin-tabs">
-          <button class="admin-tab active" onclick="app.switchAdminTab('settings')">\${this.t('admin.tab_settings', 'Ayarlar')}</button>
-          <button class="admin-tab" onclick="app.switchAdminTab('users')">\${this.t('admin.tab_users', 'Kullanıcılar')}</button>
-          <button class="admin-tab" onclick="app.switchAdminTab('questions')">\${this.t('admin.tab_questions', 'Sorular')}</button>
-          <button class="admin-tab" onclick="app.switchAdminTab('answers')">\${this.t('admin.tab_answers', 'Cevaplar')}</button>
+          <button class="admin-tab active" onclick="app.switchAdminTab('settings')">\${this.t('admin.tab_settings')}</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('users')">\${this.t('admin.tab_users')}</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('questions')">\${this.t('admin.tab_questions')}</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('answers')">\${this.t('admin.tab_answers')}</button>
         </div>
 
         <div id="admin-settings" class="admin-content active">
@@ -2443,7 +2443,7 @@ const JS = `class App {
 
         <div id="admin-questions" class="admin-content">
           <div class="admin-card">
-            <h3>\${this.t('admin.all_questions', 'Tüm Sorular')} (\${questions.questions.length})</h3>
+            <h3>\${this.t('admin.all_questions')} (\${questions.questions.length})</h3>
             <table class="admin-table">
               <thead>
                 <tr>
@@ -2476,7 +2476,7 @@ const JS = `class App {
 
         <div id="admin-answers" class="admin-content">
           <div class="admin-card">
-            <h3>\${this.t('admin.all_answers', 'Tüm Cevaplar')} (\${answers.answers.length})</h3>
+            <h3>\${this.t('admin.all_answers')} (\${answers.answers.length})</h3>
             <table class="admin-table">
               <thead>
                 <tr>
@@ -2677,7 +2677,7 @@ const JS = `class App {
     modal.innerHTML = \`
       <div class="modal" style="min-width: 600px; position: relative;">
         <button onclick="this.closest('.modal-overlay').remove()" style="position: absolute; top: 16px; right: 16px; background: #d1242f; color: #fff; border: none; width: 32px; height: 32px; font-size: 20px; font-weight: 700; cursor: pointer; line-height: 1; padding: 0;">×</button>
-        <h3>\${this.t('modal.ask_question', 'Soru Sor')}</h3>
+        <h3>\${this.t('modal.ask_question')}</h3>
         <div id="questionModalMessage"></div>
         <form id="questionModalForm">
           <div class="form-group">
