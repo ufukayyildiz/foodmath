@@ -46,7 +46,7 @@ async function handleAPI(request, env, path, corsHeaders) {
     return handleCreateAnswer(request, env, questionId, corsHeaders);
   }
 
-  if (path.match(/^\/api\/u\/[a-z0-9]+$/) && request.method === 'GET') {
+  if (path.match(/^\/api\/u\/[a-z0-9._]+$/) && request.method === 'GET') {
     const username = path.split('/').pop();
     return handleGetUserProfile(env, username, corsHeaders);
   }
@@ -165,7 +165,7 @@ async function handleAPI(request, env, path, corsHeaders) {
 function validateUsername(username) {
   if (!username) return 'Username is required';
   if (username.length > 12) return 'Username must be 12 characters or less';
-  if (!/^[a-z0-9]+$/.test(username)) return 'Username must be lowercase letters and numbers only';
+  if (!/^[a-z0-9.]+$/.test(username)) return 'Username must be lowercase letters, numbers, and dots only';
   return null;
 }
 
@@ -502,12 +502,44 @@ async function handleGetUserProfile(env, username, corsHeaders) {
       });
     }
 
+    // Get user's questions
+    const questions = await env.DB.prepare(`
+      SELECT 
+        q.id,
+        q.title,
+        q.votes,
+        q.created_at,
+        COUNT(DISTINCT a.id) as answer_count
+      FROM questions q
+      LEFT JOIN answers a ON a.question_id = q.id
+      WHERE q.user_id = ?
+      GROUP BY q.id, q.title, q.votes, q.created_at
+      ORDER BY q.created_at DESC
+    `).bind(user.id).all();
+
+    // Get user's answers
+    const answers = await env.DB.prepare(`
+      SELECT 
+        a.id,
+        a.content,
+        a.votes,
+        a.created_at,
+        a.question_id,
+        q.title as question_title
+      FROM answers a
+      LEFT JOIN questions q ON q.id = a.question_id
+      WHERE a.user_id = ?
+      ORDER BY a.created_at DESC
+    `).bind(user.id).all();
+
     return new Response(JSON.stringify({ 
       user: {
         username: user.username,
         role: user.role,
         created_at: user.created_at
-      }
+      },
+      questions: questions.results || [],
+      answers: answers.results || []
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -2167,6 +2199,24 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .pagination-ellipsis { padding: 8px !important; color: #57606a !important; font-weight: bold !important; user-select: none !important; }
 .vote-buttons span { font-weight: 700; font-size: 16px; color: #24292f; }
 .loading { text-align: center; padding: 60px; color: #57606a; font-size: 16px; }
+.profile-tabs { display: flex; border-bottom: 1px solid #d0d7de; margin-bottom: 24px; gap: 8px; }
+.profile-tab { padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: #57606a; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.profile-tab:hover { color: #24292f; }
+.profile-tab.active { color: #0969da; border-bottom-color: #0969da; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.user-question-item { border: 1px solid #d0d7de; padding: 16px; margin-bottom: 12px; background: #fff; transition: border-color 0.2s; }
+.user-question-item:hover { border-color: #0969da; }
+.user-question-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.user-question-title a { color: #0969da; text-decoration: none; }
+.user-question-title a:hover { text-decoration: underline; }
+.user-question-meta { font-size: 13px; color: #57606a; display: flex; gap: 12px; }
+.user-answer-item { border: 1px solid #d0d7de; padding: 16px; margin-bottom: 12px; background: #fff; }
+.user-answer-question { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #57606a; }
+.user-answer-question a { color: #0969da; text-decoration: none; }
+.user-answer-question a:hover { text-decoration: underline; }
+.user-answer-content { font-size: 14px; color: #24292f; margin-bottom: 8px; line-height: 1.6; }
+.user-answer-meta { font-size: 13px; color: #57606a; }
 @media (max-width: 1280px) { #app { width: 90%; } .header-content { padding: 0 24px; } }
 @media (max-width: 768px) { header { padding: 12px 16px; } #app { width: 95%; padding: 16px; } .header-content { flex-direction: row; justify-content: space-between; align-items: center; padding: 0 16px; } .user-nav { display: none !important; } .mobile-menu-btn { display: flex !important; } .modal { min-width: unset; width: 90%; padding: 24px; } .question-card { flex-direction: column; } .vote-btn { width: 28px !important; height: 28px !important; font-size: 13px !important; } .vote-count { font-size: 13px !important; } h1 { font-size: 17px !important; } h2 { font-size: 15px !important; } .site-title { font-size: 17px !important; } .answers-header { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; flex-wrap: nowrap !important; margin-bottom: 16px !important; } .answers-header h2 { font-size: 15px !important; margin: 0 !important; white-space: nowrap; } .answer-meta-inline { display: flex !important; flex-wrap: nowrap !important; gap: 6px !important; font-size: 11px !important; white-space: nowrap; } .answer-detail:first-child .answer-meta { display: none !important; } .answer-meta { flex-wrap: nowrap !important; white-space: nowrap; gap: 6px !important; font-size: 11px !important; } .answer-meta span { display: inline !important; } .question-content { font-size: 13px !important; } .answer-content { font-size: 13px !important; } .answer-detail { padding-left: 5px !important; } .question-detail { padding-left: 5px !important; } }
 @media (min-width: 1920px) { #app { width: 60%; max-width: 1400px; } }`;
@@ -2793,7 +2843,7 @@ const JS = `class App {
         return;
       }
 
-      const { user } = data;
+      const { user, questions, answers } = data;
       
       this.app.innerHTML = \`
         <a href="/" class="back-btn">\${this.t('button.back_home', '← Ana Sayfa')}</a>
@@ -2806,11 +2856,58 @@ const JS = `class App {
           <p style="text-align: center; color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">
             \${this.t('misc.joined', 'Joined')} \${new Date(user.created_at).toLocaleDateString()}
           </p>
+
+          <div class="profile-tabs">
+            <button class="profile-tab active" onclick="app.switchTab('questions')">\${this.t('profile.questions', 'Questions')} (\${questions.length})</button>
+            <button class="profile-tab" onclick="app.switchTab('answers')">\${this.t('profile.answers', 'Answers')} (\${answers.length})</button>
+          </div>
+
+          <div id="tab-questions" class="tab-content active">
+            \${questions.length === 0 ? '<p style="color: #57606a; text-align: center;">' + this.t('profile.no_questions', 'No questions yet') + '</p>' : ''}
+            \${questions.map(q => \`
+              <div class="user-question-item">
+                <div class="user-question-title">
+                  <a href="/q/\${q.id}">\${this.escapeHtml(q.title)}</a>
+                </div>
+                <div class="user-question-meta">
+                  <span>\${q.votes} \${this.t('misc.votes', 'votes')}</span>
+                  <span>\${q.answer_count} \${this.t('misc.answers', 'answers')}</span>
+                  <span>\${new Date(q.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+            \`).join('')}
+          </div>
+
+          <div id="tab-answers" class="tab-content">
+            \${answers.length === 0 ? '<p style="color: #57606a; text-align: center;">' + this.t('profile.no_answers', 'No answers yet') + '</p>' : ''}
+            \${answers.map(a => \`
+              <div class="user-answer-item">
+                <div class="user-answer-question">
+                  \${this.t('profile.answered', 'Answered')}: <a href="/q/\${a.question_id}">\${this.escapeHtml(a.question_title || 'Question #' + a.question_id)}</a>
+                </div>
+                <div class="user-answer-content">\${this.formatTextWithParagraphs(a.content.substring(0, 200))}\${a.content.length > 200 ? '...' : ''}</div>
+                <div class="user-answer-meta">
+                  <span>\${a.votes} \${this.t('misc.votes', 'votes')}</span>
+                  <span>\${new Date(a.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+            \`).join('')}
+          </div>
         </div>
       \`;
     } catch (error) {
       this.app.innerHTML = \`<div class="loading">Error loading profile: \${error.message}</div>\`;
     }
+  }
+
+  switchTab(tabName) {
+    // Remove active class from all tabs and content
+    document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Add active class to selected tab and content
+    event.target.classList.add('active');
+    document.getElementById(\`tab-\${tabName}\`).classList.add('active');
   }
 
   showProfile() {
