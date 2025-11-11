@@ -22,6 +22,9 @@ A fast, minimal, and modern question & answer platform built specifically for Cl
   - Added missing translation keys: home.all_questions, button.ask_question
   - All UI text now pulls exclusively from translations table
   - NO hardcoded text anywhere in the application
+- **ADDED**: Name column to users table
+  - New TEXT column for storing user's full name (nullable)
+  - Allows displaying full names instead of just usernames
 - **FIXED**: Votes table user_id column type - Changed from TEXT to INTEGER to match users table, eliminating "1.0" display issue
   - Migrated existing votes data, keeping latest vote for duplicate entries
   - Added UNIQUE constraint on (user_id, item_type, item_id)
@@ -134,7 +137,7 @@ None specified yet.
 ### Database Schema
 - **questions**: `id` (INTEGER), `title`, `content`, `user_id` (INTEGER), `votes`, `created_at` (NO category_id)
 - **answers**: `id` (INTEGER), `question_id` (INTEGER), `content`, `user_id` (INTEGER), `votes`, `created_at`
-- **users**: `id` (INTEGER AUTOINCREMENT), `email`, `username`, `password_hash`, `role`, `created_at`
+- **users**: `id` (INTEGER AUTOINCREMENT), `email`, `username`, `password_hash`, `role`, `name` (TEXT, nullable), `created_at`
 - **sessions**: `session_id` (TEXT), `user_id` (INTEGER), `expires_at`, `created_at`
 - **votes**: `id` (INTEGER), `user_id` (INTEGER NOT NULL), `item_type`, `item_id`, `vote`, `created_at`, UNIQUE(user_id, item_type, item_id)
 - **site_settings**: `key` (TEXT), `value`, `updated_at`
