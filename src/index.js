@@ -1606,10 +1606,42 @@ async function renderHomePage(env, page, corsHeaders) {
         paginationHTML += `<a href="${prevPage}" class="pagination-btn">← ${translations['pagination.previous'] || 'Previous'}</a>`;
       }
       
-      for (let i = 1; i <= totalPages; i++) {
+      // Show limited page numbers (max 7 buttons)
+      const maxButtons = 7;
+      let startPage = Math.max(1, page - 3);
+      let endPage = Math.min(totalPages, page + 3);
+      
+      // Adjust if near the beginning
+      if (page <= 4) {
+        endPage = Math.min(maxButtons, totalPages);
+      }
+      
+      // Adjust if near the end
+      if (page >= totalPages - 3) {
+        startPage = Math.max(1, totalPages - maxButtons + 1);
+      }
+      
+      // First page + ellipsis
+      if (startPage > 1) {
+        paginationHTML += `<a href="/" class="pagination-btn">1</a>`;
+        if (startPage > 2) {
+          paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+        }
+      }
+      
+      // Page numbers
+      for (let i = startPage; i <= endPage; i++) {
         const pageUrl = i === 1 ? '/' : `/p/${i}`;
         const isActive = i === page;
         paginationHTML += `<a href="${pageUrl}" class="pagination-btn ${isActive ? 'active' : ''}">${i}</a>`;
+      }
+      
+      // Ellipsis + last page
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+        }
+        paginationHTML += `<a href="/p/${totalPages}" class="pagination-btn">${totalPages}</a>`;
       }
       
       if (page < totalPages) {
@@ -2093,10 +2125,11 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .question-card-meta a { color: #0969da !important; text-decoration: none !important; font-weight: 500 !important; }
 .question-card-meta a:hover { text-decoration: underline !important; }
 .questions-header { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 24px !important; }
-.pagination { display: flex !important; justify-content: center !important; align-items: center !important; gap: 8px !important; margin-top: 32px !important; }
+.pagination { display: flex !important; justify-content: center !important; align-items: center !important; gap: 8px !important; margin-top: 32px !important; flex-wrap: wrap !important; }
 .pagination-btn { padding: 8px 16px !important; background: #fff !important; border: 1px solid #d0d7de !important; color: #24292f !important; text-decoration: none !important; font-size: 14px !important; font-weight: 500 !important; transition: all 0.2s !important; }
 .pagination-btn:hover { background: #f6f8fa !important; border-color: #0969da !important; }
 .pagination-btn.active { background: #218838 !important; border-color: #218838 !important; color: #fff !important; }
+.pagination-ellipsis { padding: 8px !important; color: #57606a !important; font-weight: bold !important; user-select: none !important; }
 .vote-buttons span { font-weight: 700; font-size: 16px; color: #24292f; }
 .loading { text-align: center; padding: 60px; color: #57606a; font-size: 16px; }
 @media (max-width: 1280px) { #app { width: 90%; } .header-content { padding: 0 24px; } }

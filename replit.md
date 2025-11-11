@@ -31,6 +31,11 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Preserved original creation dates from topics
   - Decoded HTML entities in titles and content
   - Skipped 6 questions with invalid user references
+- **FIXED**: Pagination scrolling issue
+  - Changed from showing all 245 page buttons to smart pagination (max 7 buttons)
+  - Now shows: Prev | 1 ... 3 4 5 6 7 ... 245 | Next
+  - Added ellipsis styling for better UX
+  - Maintains 6 questions per page as designed
 
 ## User Preferences
 None specified yet.
