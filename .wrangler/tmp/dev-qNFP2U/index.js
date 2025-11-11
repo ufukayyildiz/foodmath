@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-uGyp3B/checked-fetch.js
+// .wrangler/tmp/bundle-l0jv6h/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -99,6 +99,9 @@ async function handleAPI(request, env, path, corsHeaders) {
   if (path === "/api/admin/users" && request.method === "GET") {
     return handleAdminGetUsers(request, env, corsHeaders);
   }
+  if (path === "/api/admin/users" && request.method === "POST") {
+    return handleAdminCreateUser(request, env, corsHeaders);
+  }
   if (path.match(/^\/api\/admin\/users\/[^/]+\/role$/) && request.method === "PUT") {
     const userId = path.split("/")[4];
     return handleAdminUpdateUserRole(request, env, userId, corsHeaders);
@@ -121,6 +124,10 @@ async function handleAPI(request, env, path, corsHeaders) {
     const questionId = path.split("/").pop();
     return handleAdminDeleteQuestion(request, env, questionId, corsHeaders);
   }
+  if (path.match(/^\/api\/admin\/questions\/\d+\/author$/) && request.method === "PUT") {
+    const questionId = path.split("/")[4];
+    return handleAdminChangeQuestionAuthor(request, env, questionId, corsHeaders);
+  }
   if (path.match(/^\/api\/admin\/answers\/\d+$/) && request.method === "PUT") {
     const answerId = path.split("/").pop();
     return handleAdminUpdateAnswer(request, env, answerId, corsHeaders);
@@ -128,6 +135,10 @@ async function handleAPI(request, env, path, corsHeaders) {
   if (path.match(/^\/api\/admin\/answers\/\d+$/) && request.method === "DELETE") {
     const answerId = path.split("/").pop();
     return handleAdminDeleteAnswer(request, env, answerId, corsHeaders);
+  }
+  if (path.match(/^\/api\/admin\/answers\/\d+\/author$/) && request.method === "PUT") {
+    const answerId = path.split("/")[4];
+    return handleAdminChangeAnswerAuthor(request, env, answerId, corsHeaders);
   }
   if (path.match(/^\/api\/questions\/\d+\/vote$/) && request.method === "POST") {
     const questionId = path.split("/")[3];
@@ -958,6 +969,128 @@ async function handleAdminDeleteAnswer(request, env, answerId, corsHeaders) {
   }
 }
 __name(handleAdminDeleteAnswer, "handleAdminDeleteAnswer");
+async function handleAdminCreateUser(request, env, corsHeaders) {
+  try {
+    const admin = await checkAdminAccess(request, env);
+    if (!admin) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const { email, username, password, name, role } = await request.json();
+    if (!email || !username || !password) {
+      return new Response(JSON.stringify({ error: "Email, username, and password are required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const usernameError = validateUsername(username);
+    if (usernameError) {
+      return new Response(JSON.stringify({ error: usernameError }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    if (!validateEmail(email)) {
+      return new Response(JSON.stringify({ error: "Invalid email format" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const userRole = role && ["user", "admin"].includes(role) ? role : "user";
+    const existingUser = await env.DB.prepare("SELECT id FROM users WHERE username = ? OR email = ?").bind(username, email).first();
+    if (existingUser) {
+      return new Response(JSON.stringify({ error: "Username or email already exists" }), {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const passwordHash = await hashPassword(password);
+    await env.DB.prepare(
+      "INSERT INTO users (email, username, password_hash, role, name) VALUES (?, ?, ?, ?, ?)"
+    ).bind(email, username, passwordHash, userRole, name || null).run();
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+}
+__name(handleAdminCreateUser, "handleAdminCreateUser");
+async function handleAdminChangeQuestionAuthor(request, env, questionId, corsHeaders) {
+  try {
+    const admin = await checkAdminAccess(request, env);
+    if (!admin) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const { username } = await request.json();
+    if (!username) {
+      return new Response(JSON.stringify({ error: "Username required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const user = await env.DB.prepare("SELECT id FROM users WHERE username = ?").bind(username).first();
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    await env.DB.prepare("UPDATE questions SET user_id = ? WHERE id = ?").bind(user.id, questionId).run();
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+}
+__name(handleAdminChangeQuestionAuthor, "handleAdminChangeQuestionAuthor");
+async function handleAdminChangeAnswerAuthor(request, env, answerId, corsHeaders) {
+  try {
+    const admin = await checkAdminAccess(request, env);
+    if (!admin) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const { username } = await request.json();
+    if (!username) {
+      return new Response(JSON.stringify({ error: "Username required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const user = await env.DB.prepare("SELECT id FROM users WHERE username = ?").bind(username).first();
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    await env.DB.prepare("UPDATE answers SET user_id = ? WHERE id = ?").bind(user.id, answerId).run();
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+}
+__name(handleAdminChangeAnswerAuthor, "handleAdminChangeAnswerAuthor");
 async function handleVote(request, env, itemType, itemId, corsHeaders) {
   try {
     const sessionId = getSessionFromCookie(request.headers.get("Cookie"));
@@ -2166,7 +2299,10 @@ var JS = `class App {
 
         <div id="admin-users" class="admin-content">
           <div class="admin-card">
-            <h3>\${this.t('admin.all_users', 'T\xFCm Kullan\u0131c\u0131lar')} (\${users.users.length})</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="margin: 0;">\${this.t('admin.all_users', 'T\xFCm Kullan\u0131c\u0131lar')} (\${users.users.length})</h3>
+              <button onclick="app.showAddUserModal()" class="admin-btn admin-btn-success">\${this.t('button.add_user', 'Add User')}</button>
+            </div>
             <table class="admin-table">
               <thead>
                 <tr>
@@ -2223,6 +2359,7 @@ var JS = `class App {
                     <td>\${new Date(q.created_at).toLocaleDateString()}</td>
                     <td>
                       <button onclick="app.editQuestionById(this)" data-id="\${q.id}" data-title="\${this.escapeHtml(q.title)}" data-content="\${this.escapeHtml(q.content)}" class="admin-btn admin-btn-sm">\${this.t('button.edit', 'Edit')}</button>
+                      <button onclick="app.changeQuestionAuthor(\${q.id}, '\${this.escapeHtml(q.username || '')}')" class="admin-btn admin-btn-sm">\${this.t('button.change_author', 'Change Author')}</button>
                       <button onclick="app.deleteQuestion(\${q.id})" class="admin-btn admin-btn-sm admin-btn-danger">\${this.t('button.delete', 'Delete')}</button>
                     </td>
                   </tr>
@@ -2258,6 +2395,7 @@ var JS = `class App {
                     <td>\${new Date(a.created_at).toLocaleDateString()}</td>
                     <td>
                       <button onclick="app.editAnswerById(this)" data-id="\${a.id}" data-content="\${this.escapeHtml(a.content)}" class="admin-btn admin-btn-sm">\${this.t('button.edit', 'Edit')}</button>
+                      <button onclick="app.changeAnswerAuthor(\${a.id}, '\${this.escapeHtml(a.username || '')}')" class="admin-btn admin-btn-sm">\${this.t('button.change_author', 'Change Author')}</button>
                       <button onclick="app.deleteAnswer(\${a.id})" class="admin-btn admin-btn-sm admin-btn-danger">\${this.t('button.delete', 'Delete')}</button>
                     </td>
                   </tr>
@@ -2904,6 +3042,129 @@ var JS = `class App {
       alert(this.t('error.delete_answer', 'Cevap silinemedi') + ': ' + error.message);
     }
   }
+
+  showAddUserModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = \`
+      <div class="modal">
+        <h3>\${this.t('modal.add_user', 'Add New User')}</h3>
+        <div id="addUserMessage"></div>
+        <form id="addUserForm">
+          <div class="form-group">
+            <label>\${this.t('label.username', 'Username')}</label>
+            <input type="text" id="newUsername" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
+          </div>
+          <div class="form-group">
+            <label>\${this.t('label.email', 'Email')}</label>
+            <input type="email" id="newEmail" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
+          </div>
+          <div class="form-group">
+            <label>\${this.t('label.password', 'Password')}</label>
+            <input type="password" id="newPassword" required style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
+          </div>
+          <div class="form-group">
+            <label>\${this.t('label.name', 'Name')} (\${this.t('label.optional', 'Optional')})</label>
+            <input type="text" id="newName" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
+          </div>
+          <div class="form-group">
+            <label>\${this.t('label.role', 'Role')}</label>
+            <select id="newRole" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #d0d7de; color: #24292f; font-size: 14px;">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="modal-actions">
+            <button type="button" onclick="this.closest('.modal-overlay').remove()" class="admin-btn" style="background: var(--border);">\${this.t('button.cancel', 'Cancel')}</button>
+            <button type="submit" class="admin-btn admin-btn-success">\${this.t('button.create_user', 'Create User')}</button>
+          </div>
+        </form>
+      </div>
+    \`;
+    document.body.appendChild(modal);
+
+    document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await this.handleAddUser(modal);
+    });
+  }
+
+  async handleAddUser(modal) {
+    const messageEl = document.getElementById('addUserMessage');
+    const username = document.getElementById('newUsername').value;
+    const email = document.getElementById('newEmail').value;
+    const password = document.getElementById('newPassword').value;
+    const name = document.getElementById('newName').value;
+    const role = document.getElementById('newRole').value;
+
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, name: name || null, role }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        modal.remove();
+        this.showAdmin();
+      } else {
+        messageEl.innerHTML = '<div class="error-message">' + this.escapeHtml(data.error) + '</div>';
+      }
+    } catch (error) {
+      messageEl.innerHTML = '<div class="error-message">' + this.t('error.create_user', 'Failed to create user') + ': ' + this.escapeHtml(error.message) + '</div>';
+    }
+  }
+
+  async changeQuestionAuthor(questionId, currentUsername) {
+    const newUsername = prompt(this.t('prompt.enter_new_username', 'Enter new username for this question:'), currentUsername);
+    if (!newUsername || newUsername === currentUsername) return;
+
+    try {
+      const response = await fetch(\`/api/admin/questions/\${questionId}/author\`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newUsername }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        this.showAdmin();
+      } else {
+        alert(this.t('error.generic', 'Error') + ': ' + data.error);
+      }
+    } catch (error) {
+      alert(this.t('error.change_author', 'Failed to change author') + ': ' + error.message);
+    }
+  }
+
+  async changeAnswerAuthor(answerId, currentUsername) {
+    const newUsername = prompt(this.t('prompt.enter_new_username', 'Enter new username for this answer:'), currentUsername);
+    if (!newUsername || newUsername === currentUsername) return;
+
+    try {
+      const response = await fetch(\`/api/admin/answers/\${answerId}/author\`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newUsername }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        this.showAdmin();
+      } else {
+        alert(this.t('error.generic', 'Error') + ': ' + data.error);
+      }
+    } catch (error) {
+      alert(this.t('error.change_author', 'Failed to change author') + ': ' + error.message);
+    }
+  }
 }
 
 const app = new App();`;
@@ -2926,7 +3187,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-uGyp3B/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-l0jv6h/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -2957,7 +3218,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-uGyp3B/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-l0jv6h/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
