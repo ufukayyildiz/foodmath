@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-MwNL78/checked-fetch.js
+// .wrangler/tmp/bundle-6y3xQx/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -1642,9 +1642,31 @@ function escapeHtml(text) {
 __name(escapeHtml, "escapeHtml");
 function formatTextWithParagraphs(text) {
   if (!text) return "";
-  const escaped = escapeHtml(text);
+  const quoteRegex = /\[quote="([^,]+),\s*post:(\d+),\s*topic:(\d+)"\]([\s\S]*?)\[\/quote\]/g;
+  let processedText = text;
+  const quotes = [];
+  processedText = processedText.replace(quoteRegex, (match, author, postNum, topicId, content) => {
+    const placeholder = `___QUOTE_${quotes.length}___`;
+    quotes.push({
+      author: escapeHtml(author),
+      postNum,
+      topicId,
+      content: escapeHtml(content.trim())
+    });
+    return placeholder;
+  });
+  const escaped = escapeHtml(processedText);
   const paragraphs = escaped.split(/\n\n+/);
-  const formatted = paragraphs.map((p) => p.trim()).filter((p) => p.length > 0).map((p) => `<p style="margin-bottom: 12px;">${p.replace(/\n/g, "<br>")}</p>`).join("");
+  let formatted = paragraphs.map((p) => p.trim()).filter((p) => p.length > 0).map((p) => `<p style="margin-bottom: 12px;">${p.replace(/\n/g, "<br>")}</p>`).join("");
+  quotes.forEach((quote, index) => {
+    const quoteHtml = `<blockquote class="quote-block">
+      <div class="quote-header">
+        <a href="/u/${quote.author.toLowerCase()}">@${quote.author}</a> said in <a href="/q/${quote.topicId}">question #${quote.topicId}</a>:
+      </div>
+      <div class="quote-content">${quote.content.replace(/\n/g, "<br>")}</div>
+    </blockquote>`;
+    formatted = formatted.replace(`___QUOTE_${index}___`, quoteHtml);
+  });
   return formatted || `<p>${escaped}</p>`;
 }
 __name(formatTextWithParagraphs, "formatTextWithParagraphs");
@@ -1780,6 +1802,11 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .answers-list { display: flex; flex-direction: column; gap: 16px; }
 .answer-detail { background: #f0fff4 !important; border: 1px solid #d0d7de !important; padding: 24px !important; padding-left: 34px !important; display: flex !important; gap: 16px !important; margin-bottom: 16px !important; }
 .answer-content { color: #24292f !important; line-height: 1.6; margin-bottom: 12px; font-size: 15px; }
+.quote-block { margin: 16px 0; padding: 12px 16px; background: #f6f8fa; border-left: 4px solid #0969da; border-radius: 4px; }
+.quote-header { font-size: 13px; color: #57606a; margin-bottom: 8px; font-weight: 500; }
+.quote-header a { color: #0969da; text-decoration: none; }
+.quote-header a:hover { text-decoration: underline; }
+.quote-content { color: #24292f; font-size: 14px; line-height: 1.5; font-style: italic; }
 .answer-meta { color: #57606a !important; font-size: 12px; display: flex; gap: 12px; align-items: center; }
 .answer-meta span { color: #57606a !important; }
 .answer-meta a { color: #24292f !important; }
@@ -2790,14 +2817,44 @@ var JS = `class App {
   formatTextWithParagraphs(text) {
     if (!text) return '';
     
-    const escaped = this.escapeHtml(text);
-    const paragraphs = escaped.split(/\\n\\n+/);
+    // Parse quote blocks first (before escaping) - match author up to first comma
+    const quoteRegex = /\\[quote="([^,]+),\\s*post:(\\d+),\\s*topic:(\\d+)"\\]([\\s\\S]*?)\\[\\/quote\\]/g;
+    let processedText = text;
     
-    const formatted = paragraphs
+    // Replace quote blocks with placeholders
+    const quotes = [];
+    processedText = processedText.replace(quoteRegex, (match, author, postNum, topicId, content) => {
+      const placeholder = \`___QUOTE_\${quotes.length}___\`;
+      quotes.push({
+        author: this.escapeHtml(author),
+        postNum,
+        topicId,
+        content: this.escapeHtml(content.trim())
+      });
+      return placeholder;
+    });
+    
+    // Escape the remaining text
+    const escaped = this.escapeHtml(processedText);
+    
+    // Process paragraphs
+    const paragraphs = escaped.split(/\\n\\n+/);
+    let formatted = paragraphs
       .map(p => p.trim())
       .filter(p => p.length > 0)
       .map(p => \`<p style="margin-bottom: 12px;">\${p.replace(/\\n/g, '<br>')}</p>\`)
       .join('');
+    
+    // Replace placeholders with styled quote blocks
+    quotes.forEach((quote, index) => {
+      const quoteHtml = \`<blockquote class="quote-block">
+        <div class="quote-header">
+          <a href="/u/\${quote.author.toLowerCase()}">@\${quote.author}</a> said in <a href="/q/\${quote.topicId}">question #\${quote.topicId}</a>:
+        </div>
+        <div class="quote-content">\${quote.content.replace(/\\n/g, '<br>')}</div>
+      </blockquote>\`;
+      formatted = formatted.replace(\`___QUOTE_\${index}___\`, quoteHtml);
+    });
     
     return formatted || \`<p>\${escaped}</p>\`;
   }
@@ -3308,7 +3365,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-MwNL78/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-6y3xQx/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3339,7 +3396,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-MwNL78/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-6y3xQx/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
