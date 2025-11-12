@@ -1,0 +1,39 @@
+UPDATE questions SET content = 'Basicly;
+UPDATE questions SET content = '![image|690x392](upload://kJVbmaMGdZV1R9ZLwZaOrZnzuEK.png)  
+UPDATE questions SET content = 'ANYSYS AS It is one of the CFD programs which are used in the design phase of the process and equipment used in the food industry and based on the rheological properties of the food product. It provides equipment revisions by measuring the design and modeling of new industrial processes and the efficiency of existing equipment. Allows integration with BIM-enabled software and allows modeling. For example, in drier systems, two different parameters are emphasized, static or convective examination of the current in the dryer is done by analyzing the elastic modulus, temperature and air drying during the flow processing. The most important feature is to reach the desired results without creating a prototype.' WHERE id = 79;
+UPDATE questions SET content = 'Hello everyone,
+UPDATE questions SET content = '# Effect of environmental stresses on the survival and cytotoxicity of Shiga toxin-producing  *Escherichia coli*
+UPDATE questions SET content = 'Hello everyone,
+UPDATE questions SET content = 'Hi everyone,
+UPDATE questions SET content = 'Abstract
+UPDATE questions SET content = '#### Abstract
+UPDATE questions SET content = 'During cocoa beans roasting, there are physicochemical changes that develop the chocolate quality attributes. 
+UPDATE questions SET content = 'Is there anyone can give an example about food fraud in history which is really different and interesting than other cases. As to understand this new topic better.' WHERE id = 311;
+UPDATE questions SET content = 'HI All,
+UPDATE questions SET content = 'I am curious if there is any possible utilization of the seeds of the fruit of Amlok or Date-plum (Diospyros Lotus). Does anyone know or has anyone tried to utilize its seeds?' WHERE id = 539;
+UPDATE questions SET content = '**Abstract**
+UPDATE questions SET content = 'The influence of different drying methods on physical and nutritional properties of shrimp meat was investigated in this study. 
+UPDATE questions SET content = 'This research was conducted to assess the quality of sweet cherry juice treated with sodium benzoate and potassium sorbate.
+UPDATE questions SET content = '### Abstract
+UPDATE questions SET content = '![Biotechnological Processes in Microbial Amylase Production|690x360](upload://5P7WhfugzMPoavN2MHQJidd1Ng7.png)
+UPDATE questions SET content = 'Hello,
+UPDATE questions SET content = 'Abstract
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = 'Hello Dear feople.io user,
+UPDATE questions SET content = '### Abstract
+UPDATE questions SET content = '*Chlamydia pneumoniae*
+UPDATE questions SET content = '**Example of a Linear and Modular HACCP Plan**
+UPDATE questions SET content = 'In many countries where milk production is high, a significant amount of milk is used for cheese production. The most important factor determining the yield and quality of cheese in cheese making is the coagulation property of milk. For this reason, coagulation of milk with rennet, which is the basis of cheese production for the dairy industry, is of great importance. The coagulation of casein micelles forms the basis of cheese making. Coagulation occurs in two different ways, usually with acid and enzyme. In both methods, casein changes to insoluble form and forms a non-degradable network structure. In acid coagulation, the protein network is loose, whereas in enzyme coagulation, the protein network is tight and elastic.
+UPDATE questions SET content = '[Virgin Olive Oils: Environmental Conditions, Agronomical Factors and Processing Technology Affecting the Chemistry of Flavor Profile](https://feople.io/t/virgin-olive-oils/1163)
+UPDATE questions SET content = 'https://feople.io/t/need-help-with-protein-bar-recipe-for-business/1001/36

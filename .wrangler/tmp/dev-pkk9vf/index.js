@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-gN22zD/checked-fetch.js
+// .wrangler/tmp/bundle-2mZNWr/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -1543,7 +1543,7 @@ async function renderQuestionPage(env, questionId, corsHeaders) {
         <a href="/">${translations["breadcrumb.home"] || "Home"}</a> &gt; 
         ${escapeHtml(question.title)}
       </div>
-      <div class="question-detail">
+      <div class="question-detail" data-id="${question.id}" data-type="question">
         <div class="vote-section">
           <button class="vote-btn upvote" data-id="${question.id}" data-type="question">\u25B2</button>
           <span class="vote-count" id="question-${question.id}-votes">${question.votes || 0}</span>
@@ -1684,7 +1684,9 @@ function formatTextWithParagraphs(text) {
     return placeholder;
   });
   const escaped = escapeHtml(processedText);
-  const paragraphs = escaped.split(/\n\n+/);
+  const urlRegex = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g;
+  const linkedText = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  const paragraphs = linkedText.split(/\n\n+/);
   let formatted = paragraphs.map((p) => p.trim()).filter((p) => p.length > 0).map((p) => `<p style="margin-bottom: 12px;">${p.replace(/\n/g, "<br>")}</p>`).join("");
   quotes.forEach((quote, index) => {
     const quoteHtml = `<blockquote class="quote-block">
@@ -1816,7 +1818,7 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .question-meta { color: #57606a; font-size: 12px; display: flex; gap: 12px; align-items: center; }
 .question-meta a { color: #24292f; text-decoration: none; font-weight: 500; }
 .question-meta a:hover { color: #0969da; }
-.question-detail { background: #fffef0; border: 1px solid #d0d7de; padding: 32px; margin-bottom: 16px; display: flex; gap: 16px; }
+.question-detail { background: #fffef0; border: 1px solid #d0d7de; padding: 32px; margin-bottom: 16px; display: flex; gap: 16px; position: relative; }
 .question-detail h2 { font-size: 28px; font-weight: 600; color: #24292f; margin-bottom: 16px; }
 .question-detail p { color: #24292f; line-height: 1.6; font-size: 16px; }
 .content-body { flex: 1; }
@@ -1828,7 +1830,7 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .answer-meta-inline a:hover { text-decoration: underline; }
 .answers-title { font-size: 20px; font-weight: 600; color: #24292f; margin-bottom: 24px; }
 .answers-list { display: flex; flex-direction: column; gap: 16px; }
-.answer-detail { background: #f0fff4 !important; border: 1px solid #d0d7de !important; padding: 24px !important; padding-left: 34px !important; display: flex !important; gap: 16px !important; margin-bottom: 16px !important; }
+.answer-detail { background: #f0fff4 !important; border: 1px solid #d0d7de !important; padding: 24px !important; padding-left: 34px !important; display: flex !important; gap: 16px !important; margin-bottom: 16px !important; position: relative !important; }
 .answer-content { color: #24292f !important; line-height: 1.6; margin-bottom: 12px; font-size: 15px; }
 .quote-block { margin: 16px 0; padding: 12px 16px; background: #f6f8fa; border-left: 4px solid #0969da; border-radius: 4px; }
 .quote-header { font-size: 13px; color: #57606a; margin-bottom: 8px; font-weight: 500; }
@@ -1901,6 +1903,11 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .pagination-btn:hover { background: #f6f8fa !important; border-color: #0969da !important; }
 .pagination-btn.active { background: #218838 !important; border-color: #218838 !important; color: #fff !important; }
 .pagination-ellipsis { padding: 8px !important; color: #57606a !important; font-weight: bold !important; user-select: none !important; }
+.admin-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 10; }
+.admin-action-btn { padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid #d0d7de; background: #fff; color: #24292f; cursor: pointer; transition: all 0.2s; }
+.admin-action-btn:hover { background: #f6f8fa; border-color: #0969da; }
+.admin-action-btn.delete { color: #d1242f; border-color: #d1242f; }
+.admin-action-btn.delete:hover { background: #d1242f; color: #fff; }
 .vote-buttons span { font-weight: 700; font-size: 16px; color: #24292f; }
 .loading { text-align: center; padding: 60px; color: #57606a; font-size: 16px; }
 .profile-tabs { display: flex; border-bottom: 1px solid #d0d7de; margin-bottom: 24px; gap: 8px; }
@@ -1922,7 +1929,7 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .user-answer-content { font-size: 14px; color: #24292f; margin-bottom: 8px; line-height: 1.6; }
 .user-answer-meta { font-size: 13px; color: #57606a; }
 @media (max-width: 1280px) { #app { width: 90%; } .header-content { padding: 0 24px; } }
-@media (max-width: 768px) { header { padding: 12px 16px; } #app { width: 95%; padding: 16px; } .header-content { flex-direction: row; justify-content: space-between; align-items: center; padding: 0 16px; } .user-nav { display: none !important; } .mobile-menu-btn { display: flex !important; } .modal { min-width: unset; width: 90%; padding: 24px; } .question-card { flex-direction: column; } .vote-btn { width: 28px !important; height: 28px !important; font-size: 13px !important; } .vote-count { font-size: 13px !important; } h1 { font-size: 17px !important; } h2 { font-size: 15px !important; } .site-title { font-size: 17px !important; } .answers-header { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; flex-wrap: nowrap !important; margin-bottom: 16px !important; } .answers-header h2 { font-size: 15px !important; margin: 0 !important; white-space: nowrap; } .answer-meta-inline { display: flex !important; flex-wrap: nowrap !important; gap: 6px !important; font-size: 11px !important; white-space: nowrap; } .answer-detail:first-child .answer-meta { display: none !important; } .answer-meta { flex-wrap: nowrap !important; white-space: nowrap; gap: 6px !important; font-size: 11px !important; } .answer-meta span { display: inline !important; } .question-content { font-size: 13px !important; } .answer-content { font-size: 13px !important; } .answer-detail { padding-left: 5px !important; } .question-detail { padding-left: 5px !important; } }
+@media (max-width: 768px) { header { padding: 12px 16px; } #app { width: 95%; padding: 16px; } .header-content { flex-direction: row; justify-content: space-between; align-items: center; padding: 0 16px; } .user-nav { display: none !important; } .mobile-menu-btn { display: flex !important; } .modal { min-width: unset; width: 90%; padding: 24px; } .question-card { flex-direction: column; } .vote-btn { width: 28px !important; height: 28px !important; font-size: 13px !important; } .vote-count { font-size: 13px !important; } h1 { font-size: 17px !important; } h2 { font-size: 15px !important; } .site-title { font-size: 17px !important; } .answers-header { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; flex-wrap: nowrap !important; margin-bottom: 16px !important; } .answers-header h2 { font-size: 15px !important; margin: 0 !important; white-space: nowrap; } .answer-meta-inline { display: flex !important; flex-wrap: nowrap !important; gap: 6px !important; font-size: 11px !important; white-space: nowrap; } .answer-detail:first-child .answer-meta { display: none !important; } .answer-meta { flex-wrap: nowrap !important; white-space: nowrap; gap: 6px !important; font-size: 11px !important; } .answer-meta span { display: inline !important; } .question-content { font-size: 13px !important; } .answer-content { font-size: 13px !important; } .answer-detail { padding-left: 5px !important; } .question-detail { padding-left: 5px !important; } .pagination { gap: 4px !important; } .pagination-btn { padding: 6px 10px !important; font-size: 12px !important; min-width: 32px !important; } .pagination-btn:nth-child(n+5):not(:last-child):not(.active) { display: none !important; } .pagination-ellipsis { display: none !important; } }
 @media (min-width: 1920px) { #app { width: 60%; max-width: 1400px; } }`;
 var JS = `class App {
   constructor() {
@@ -2930,8 +2937,12 @@ var JS = `class App {
     // Escape the remaining text
     const escaped = this.escapeHtml(processedText);
     
+    // Convert URLs to clickable links (after escaping)
+    const urlRegex = /(https?:\\/\\/[^\\s<]+[^<.,:;"')\\]\\s])/g;
+    const linkedText = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    
     // Process paragraphs
-    const paragraphs = escaped.split(/\\n\\n+/);
+    const paragraphs = linkedText.split(/\\n\\n+/);
     let formatted = paragraphs
       .map(p => p.trim())
       .filter(p => p.length > 0)
@@ -3150,7 +3161,9 @@ var JS = `class App {
   }
 
   async deleteQuestion(id) {
+    // Double confirmation for deletion
     if (!confirm(this.t('confirm.delete_question', 'Bu soruyu ve t\xFCm cevaplar\u0131n\u0131 silmek istedi\u011Finizden emin misiniz?'))) return;
+    if (!confirm(this.t('confirm.delete_question_final', 'SON UYARI: Bu i\u015Flem geri al\u0131namaz! Devam etmek istedi\u011Finizden EM\u0130N misiniz?'))) return;
 
     try {
       const response = await fetch(\`/api/admin/questions/\${id}\`, {
@@ -3220,7 +3233,9 @@ var JS = `class App {
   }
 
   async deleteAnswer(id) {
+    // Double confirmation for deletion
     if (!confirm(this.t('confirm.delete_answer', 'Bu cevab\u0131 silmek istedi\u011Finizden emin misiniz?'))) return;
+    if (!confirm(this.t('confirm.delete_answer_final', 'SON UYARI: Bu i\u015Flem geri al\u0131namaz! Devam etmek istedi\u011Finizden EM\u0130N misiniz?'))) return;
 
     try {
       const response = await fetch(\`/api/admin/answers/\${id}\`, {
@@ -3458,7 +3473,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-gN22zD/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-2mZNWr/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3489,7 +3504,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-gN22zD/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-2mZNWr/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
