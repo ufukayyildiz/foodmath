@@ -20,6 +20,15 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Translatable error messages in English and Turkish
   - "Back to Home" button to return to main page
   - Returns proper HTTP 404 status code
+- **FIXED**: Restored full content for truncated questions
+  - Fixed 804 questions that had truncated content (<200 chars)
+  - Now 829 out of 1,414 questions have full text content
+  - Used CSV "raw" field to restore complete question text
+  - Applied HTML entity decoding and newline normalization
+- **FIXED**: Answer edit button API endpoint
+  - Added GET `/api/admin/answers/:id` endpoint
+  - Created `handleAdminGetAnswer()` function
+  - Admin can now edit answers using the edit button
 
 ## Previous Changes (November 11, 2025)
 - **ADDED**: Email validation function for admin user creation

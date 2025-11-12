@@ -130,6 +130,11 @@ async function handleAPI(request, env, path, corsHeaders) {
     return handleAdminChangeQuestionAuthor(request, env, questionId, corsHeaders);
   }
 
+  if (path.match(/^\/api\/admin\/answers\/\d+$/) && request.method === 'GET') {
+    const answerId = path.split('/').pop();
+    return handleAdminGetAnswer(env, answerId, corsHeaders);
+  }
+
   if (path.match(/^\/api\/admin\/answers\/\d+$/) && request.method === 'PUT') {
     const answerId = path.split('/').pop();
     return handleAdminUpdateAnswer(request, env, answerId, corsHeaders);
@@ -1077,6 +1082,32 @@ async function handleAdminDeleteQuestion(request, env, questionId, corsHeaders) 
     await env.DB.prepare('DELETE FROM questions WHERE id = ?').bind(questionId).run();
 
     return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+async function handleAdminGetAnswer(env, answerId, corsHeaders) {
+  try {
+    const answer = await env.DB.prepare(`
+      SELECT id, content, question_id, user_id, created_at
+      FROM answers 
+      WHERE id = ?
+    `).bind(answerId).first();
+
+    if (!answer) {
+      return new Response(JSON.stringify({ error: 'Answer not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

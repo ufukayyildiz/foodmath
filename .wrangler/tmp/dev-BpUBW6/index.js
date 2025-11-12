@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-qsvsTd/checked-fetch.js
+// .wrangler/tmp/bundle-XYAMPx/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -127,6 +127,10 @@ async function handleAPI(request, env, path, corsHeaders) {
   if (path.match(/^\/api\/admin\/questions\/\d+\/author$/) && request.method === "PUT") {
     const questionId = path.split("/")[4];
     return handleAdminChangeQuestionAuthor(request, env, questionId, corsHeaders);
+  }
+  if (path.match(/^\/api\/admin\/answers\/\d+$/) && request.method === "GET") {
+    const answerId = path.split("/").pop();
+    return handleAdminGetAnswer(env, answerId, corsHeaders);
   }
   if (path.match(/^\/api\/admin\/answers\/\d+$/) && request.method === "PUT") {
     const answerId = path.split("/").pop();
@@ -967,6 +971,30 @@ async function handleAdminDeleteQuestion(request, env, questionId, corsHeaders) 
   }
 }
 __name(handleAdminDeleteQuestion, "handleAdminDeleteQuestion");
+async function handleAdminGetAnswer(env, answerId, corsHeaders) {
+  try {
+    const answer = await env.DB.prepare(`
+      SELECT id, content, question_id, user_id, created_at
+      FROM answers 
+      WHERE id = ?
+    `).bind(answerId).first();
+    if (!answer) {
+      return new Response(JSON.stringify({ error: "Answer not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    return new Response(JSON.stringify({ answer }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+}
+__name(handleAdminGetAnswer, "handleAdminGetAnswer");
 async function handleAdminUpdateAnswer(request, env, answerId, corsHeaders) {
   try {
     const admin = await checkAdminAccess(request, env);
@@ -3581,7 +3609,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-qsvsTd/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-XYAMPx/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3612,7 +3640,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-qsvsTd/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-XYAMPx/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
