@@ -3496,7 +3496,7 @@ const JS = `class App {
 
   async loadAndEditQuestion(id) {
     try {
-      const response = await fetch(\`/api/questions/\${id}\`);
+      const response = await fetch(\`/api/q/\${id}\`);
       const data = await response.json();
       if (data.question) {
         this.showEditQuestionModal(id, data.question.title, data.question.content);

@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-Yiorap/checked-fetch.js
+// .wrangler/tmp/bundle-qsvsTd/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -3197,7 +3197,7 @@ var JS = `class App {
 
   async loadAndEditQuestion(id) {
     try {
-      const response = await fetch(\`/api/questions/\${id}\`);
+      const response = await fetch(\`/api/q/\${id}\`);
       const data = await response.json();
       if (data.question) {
         this.showEditQuestionModal(id, data.question.title, data.question.content);
@@ -3581,7 +3581,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-Yiorap/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-qsvsTd/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3612,7 +3612,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-Yiorap/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-qsvsTd/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
