@@ -1756,7 +1756,7 @@ async function renderQuestionPage(env, questionId, corsHeaders) {
         FROM answers a
         LEFT JOIN users u ON a.user_id = u.id
         WHERE a.question_id = ?
-        ORDER BY a.votes DESC, a.created_at ASC
+        ORDER BY a.created_at ASC
       `).bind(questionId).all(),
       env.DB.prepare('SELECT key, value, lang FROM translations').all()
     ]);
