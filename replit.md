@@ -3,7 +3,16 @@
 ## Overview
 This project is a fast, minimal, and modern question & answer platform built for Cloudflare Workers and D1 database, named "foodmath". Its core purpose is to provide a highly performant and scalable Q&A experience with a clean GitHub-style UI. Key capabilities include direct question posting (no categories), robust user authentication and role-based access control, a comprehensive bilingual translation system for English and Turkish (250+ UI strings, no hardcoded text), dynamic site settings, a voting/reputation system, and paginated question listings (6 per page). The platform leverages Cloudflare's edge network for optimal global performance, aiming for a fully localized and efficient user experience.
 
-## Recent Changes (November 11, 2025)
+## Recent Changes (November 12, 2025)
+- **ADDED**: Admin edit/delete buttons on every question and answer
+  - Edit and delete buttons appear in the top-right corner of all questions and answers when admin is logged in
+  - Buttons are only visible to admin users
+  - Double confirmation required for deletion (asks twice before deleting)
+  - Created `loadAndEditQuestion()` and `loadAndEditAnswer()` methods to fetch data and show edit modals
+  - Implemented `bindAdminActions()` method that injects buttons for both SSR and client-rendered content
+  - Works seamlessly with existing admin panel functionality
+
+## Previous Changes (November 11, 2025)
 - **ADDED**: Email validation function for admin user creation
   - Added `validateEmail()` function to validate email format using regex
   - Prevents invalid email addresses during user creation

@@ -1767,7 +1767,7 @@ async function renderQuestionPage(env, questionId, corsHeaders) {
       answersHTML = '<div class="answers-list">';
       answers.forEach(a => {
         answersHTML += `
-          <div class="answer-detail" id="a-${a.id}">
+          <div class="answer-detail" id="a-${a.id}" data-id="${a.id}" data-type="answer">
             <div class="vote-section">
               <button class="vote-btn upvote" data-id="${a.id}" data-type="answer">▲</button>
               <span class="vote-count" id="a-${a.id}-votes">${a.votes || 0}</span>
@@ -2251,6 +2251,9 @@ const JS = `class App {
       await Promise.all([this.checkAuth(), this.loadSiteSettings()]);
       this.setupRouter();
       
+      // Bind admin actions after auth check
+      this.bindAdminActions();
+      
       // Check if we have server-rendered content (SSR)
       const hasSSRContent = this.app.innerHTML && !this.app.innerHTML.includes('Loading...');
       
@@ -2374,6 +2377,53 @@ const JS = `class App {
     }
   }
 
+  bindAdminActions() {
+    // Only show admin buttons if user is admin
+    if (!this.currentUser || this.currentUser.role !== 'admin') {
+      // Remove any existing admin buttons if user is not admin
+      document.querySelectorAll('.admin-actions').forEach(el => el.remove());
+      return;
+    }
+
+    // Find all questions and answers with data attributes
+    const targets = document.querySelectorAll('[data-type="question"], [data-type="answer"]');
+    
+    targets.forEach(target => {
+      // Skip if already has admin buttons
+      if (target.querySelector('.admin-actions')) return;
+
+      const type = target.dataset.type;
+      const id = target.dataset.id;
+      if (!id) return;
+
+      // Create admin action buttons
+      const adminActions = document.createElement('div');
+      adminActions.className = 'admin-actions';
+      
+      if (type === 'question') {
+        adminActions.innerHTML = \`
+          <button class="admin-action-btn edit" onclick="app.loadAndEditQuestion(\${id})">
+            \${this.t('button.edit', 'Edit')}
+          </button>
+          <button class="admin-action-btn delete" onclick="app.deleteQuestion(\${id})">
+            \${this.t('button.delete', 'Delete')}
+          </button>
+        \`;
+      } else {
+        adminActions.innerHTML = \`
+          <button class="admin-action-btn edit" onclick="app.loadAndEditAnswer(\${id})">
+            \${this.t('button.edit', 'Edit')}
+          </button>
+          <button class="admin-action-btn delete" onclick="app.deleteAnswer(\${id})">
+            \${this.t('button.delete', 'Delete')}
+          </button>
+        \`;
+      }
+      
+      target.appendChild(adminActions);
+    });
+  }
+
   setupRouter() {
     document.addEventListener('click', (e) => {
       if (e.target.tagName === 'A' && e.target.href && e.target.href.startsWith(window.location.origin)) {
@@ -2429,6 +2479,9 @@ const JS = `class App {
   }
 
   populateAnswerForm(questionId, placeholder) {
+    // Bind admin actions for SSR content
+    this.bindAdminActions();
+    
     if (this.currentUser) {
       placeholder.innerHTML = \`
         <div class="auth-form">
@@ -3410,6 +3463,18 @@ const JS = `class App {
     this.showEditQuestionModal(id, title, content);
   }
 
+  async loadAndEditQuestion(id) {
+    try {
+      const response = await fetch(\`/api/questions/\${id}\`);
+      const data = await response.json();
+      if (data.question) {
+        this.showEditQuestionModal(id, data.question.title, data.question.content);
+      }
+    } catch (error) {
+      alert(this.t('error.load_question', 'Failed to load question'));
+    }
+  }
+
   showEditQuestionModal(id, title, content) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -3485,6 +3550,18 @@ const JS = `class App {
     const id = button.dataset.id;
     const content = button.dataset.content;
     this.showEditAnswerModal(id, content);
+  }
+
+  async loadAndEditAnswer(id) {
+    try {
+      const response = await fetch(\`/api/admin/answers/\${id}\`);
+      const data = await response.json();
+      if (data.answer) {
+        this.showEditAnswerModal(id, data.answer.content);
+      }
+    } catch (error) {
+      alert(this.t('error.load_answer', 'Failed to load answer'));
+    }
   }
 
   showEditAnswerModal(id, content) {
