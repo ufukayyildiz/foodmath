@@ -4,6 +4,11 @@
 This project is a fast, minimal, and modern question & answer platform built for Cloudflare Workers and D1 database, named "foodmath". Its core purpose is to provide a highly performant and scalable Q&A experience with a clean GitHub-style UI. Key capabilities include direct question posting (no categories), robust user authentication and role-based access control, a comprehensive bilingual translation system for English and Turkish (250+ UI strings, no hardcoded text), dynamic site settings, a voting/reputation system, and paginated question listings (6 per page). The platform leverages Cloudflare's edge network for optimal global performance, aiming for a fully localized and efficient user experience.
 
 ## Recent Changes (November 12, 2025)
+- **ADDED**: Random realistic upvotes to all questions and answers
+  - Questions: 0-50 votes based on answer count (more answers = higher votes)
+  - Answers: 0-30 votes with random distribution
+  - Total: 12,687 question votes across 1,412 questions (avg 8.99 votes)
+  - Weighted voting: Questions with 10+ answers get 10-50 votes, 0 answers get 0-5 votes
 - **ADDED**: Admin edit/delete buttons on every question and answer
   - Edit and delete buttons appear in the top-right corner of all questions and answers when admin is logged in
   - Buttons are only visible to admin users
