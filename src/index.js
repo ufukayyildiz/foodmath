@@ -1968,9 +1968,16 @@ function escapeHtml(text) {
 function formatTextWithParagraphs(text) {
   if (!text) return '';
   
+  // Extract existing iframes (like YouTube embeds) before escaping
+  const iframes = [];
+  let processedText = text.replace(/<iframe[^>]*>.*?<\/iframe>/gi, (match) => {
+    const placeholder = `___IFRAME_${iframes.length}___`;
+    iframes.push(match);
+    return placeholder;
+  });
+  
   // Parse quote blocks first (before escaping) - match author up to first comma
   const quoteRegex = /\[quote="([^,]+),\s*post:(\d+),\s*topic:(\d+)"\]([\s\S]*?)\[\/quote\]/g;
-  let processedText = text;
   
   // Replace quote blocks with placeholders
   const quotes = [];
@@ -1988,9 +1995,16 @@ function formatTextWithParagraphs(text) {
   // Escape the remaining text
   const escaped = escapeHtml(processedText);
   
-  // Convert URLs to clickable links (after escaping)
+  // Convert YouTube URLs to embeds (before general link conversion)
+  // Match: youtube.com/watch?v=VIDEO_ID, youtu.be/VIDEO_ID, youtube.com/embed/VIDEO_ID
+  const youtubeRegex = /https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+  const withYouTube = escaped.replace(youtubeRegex, (match, videoId) => {
+    return `<div class="video-embed"><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  });
+  
+  // Convert remaining URLs to clickable links (after YouTube conversion)
   const urlRegex = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g;
-  const linkedText = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  const linkedText = withYouTube.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   
   // Process paragraphs
   const paragraphs = linkedText.split(/\n\n+/);
@@ -2009,6 +2023,11 @@ function formatTextWithParagraphs(text) {
       <div class="quote-content">${quote.content.replace(/\n/g, '<br>')}</div>
     </blockquote>`;
     formatted = formatted.replace(`___QUOTE_${index}___`, quoteHtml);
+  });
+  
+  // Restore extracted iframes
+  iframes.forEach((iframe, index) => {
+    formatted = formatted.replace(`___IFRAME_${index}___`, iframe);
   });
   
   return formatted || `<p>${escaped}</p>`;
@@ -2179,6 +2198,8 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .quote-header a { color: #0969da; text-decoration: none; }
 .quote-header a:hover { text-decoration: underline; }
 .quote-content { color: #24292f; font-size: 14px; line-height: 1.5; font-style: italic; }
+.video-embed { margin: 16px 0; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
+.video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 .answer-meta { color: #57606a !important; font-size: 12px; display: flex; gap: 12px; align-items: center; }
 .answer-meta span { color: #57606a !important; }
 .answer-meta a { color: #24292f !important; }
@@ -3331,9 +3352,16 @@ const JS = `class App {
   formatTextWithParagraphs(text) {
     if (!text) return '';
     
+    // Extract existing iframes (like YouTube embeds) before escaping
+    const iframes = [];
+    let processedText = text.replace(/<iframe[^>]*>.*?<\\/iframe>/gi, (match) => {
+      const placeholder = \`___IFRAME_\${iframes.length}___\`;
+      iframes.push(match);
+      return placeholder;
+    });
+    
     // Parse quote blocks first (before escaping) - match author up to first comma
     const quoteRegex = /\\[quote="([^,]+),\\s*post:(\\d+),\\s*topic:(\\d+)"\\]([\\s\\S]*?)\\[\\/quote\\]/g;
-    let processedText = text;
     
     // Replace quote blocks with placeholders
     const quotes = [];
@@ -3351,9 +3379,15 @@ const JS = `class App {
     // Escape the remaining text
     const escaped = this.escapeHtml(processedText);
     
-    // Convert URLs to clickable links (after escaping)
+    // Convert YouTube URLs to embeds (before general link conversion)
+    const youtubeRegex = /https?:\\/\\/(?:www\\.)?(?:youtube\\.com\\/(?:watch\\?v=|embed\\/)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})/g;
+    const withYouTube = escaped.replace(youtubeRegex, (match, videoId) => {
+      return \`<div class="video-embed"><iframe width="560" height="315" src="https://www.youtube.com/embed/\${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\`;
+    });
+    
+    // Convert remaining URLs to clickable links (after YouTube conversion)
     const urlRegex = /(https?:\\/\\/[^\\s<]+[^<.,:;"')\\]\\s])/g;
-    const linkedText = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    const linkedText = withYouTube.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
     
     // Process paragraphs
     const paragraphs = linkedText.split(/\\n\\n+/);
@@ -3372,6 +3406,11 @@ const JS = `class App {
         <div class="quote-content">\${quote.content.replace(/\\n/g, '<br>')}</div>
       </blockquote>\`;
       formatted = formatted.replace(\`___QUOTE_\${index}___\`, quoteHtml);
+    });
+    
+    // Restore extracted iframes
+    iframes.forEach((iframe, index) => {
+      formatted = formatted.replace(\`___IFRAME_\${index}___\`, iframe);
     });
     
     return formatted || \`<p>\${escaped}</p>\`;

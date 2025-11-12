@@ -4,6 +4,16 @@
 This project is a fast, minimal, and modern question & answer platform built for Cloudflare Workers and D1 database, named "foodmath". Its core purpose is to provide a highly performant and scalable Q&A experience with a clean GitHub-style UI. Key capabilities include direct question posting (no categories), robust user authentication and role-based access control, a comprehensive bilingual translation system for English and Turkish (250+ UI strings, no hardcoded text), dynamic site settings, a voting/reputation system, and paginated question listings (6 per page). The platform leverages Cloudflare's edge network for optimal global performance, aiming for a fully localized and efficient user experience.
 
 ## Recent Changes (November 12, 2025)
+- **ADDED**: YouTube video embed support in questions and answers
+  - Auto-detects YouTube URLs (youtube.com/watch?v=, youtu.be/, youtube.com/embed/)
+  - Converts URLs to responsive embedded video players
+  - Preserves existing iframe embeds in content
+  - Responsive 16:9 aspect ratio for all devices
+  - Works in both server-side rendered and client-side content
+- **FIXED**: Admin edit/delete buttons removed from home page
+  - Buttons now only appear on question detail pages
+  - Home page listings are clean without admin controls
+  - Admin buttons still function properly on detail pages
 - **ADDED**: Random realistic upvotes to all questions and answers
   - Questions: 0-50 votes based on answer count (more answers = higher votes)
   - Answers: 0-30 votes with random distribution

@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-BHzoKh/checked-fetch.js
+// .wrangler/tmp/bundle-xNSpQS/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -1711,8 +1711,13 @@ function escapeHtml(text) {
 __name(escapeHtml, "escapeHtml");
 function formatTextWithParagraphs(text) {
   if (!text) return "";
+  const iframes = [];
+  let processedText = text.replace(/<iframe[^>]*>.*?<\/iframe>/gi, (match) => {
+    const placeholder = `___IFRAME_${iframes.length}___`;
+    iframes.push(match);
+    return placeholder;
+  });
   const quoteRegex = /\[quote="([^,]+),\s*post:(\d+),\s*topic:(\d+)"\]([\s\S]*?)\[\/quote\]/g;
-  let processedText = text;
   const quotes = [];
   processedText = processedText.replace(quoteRegex, (match, author, postNum, topicId, content) => {
     const placeholder = `___QUOTE_${quotes.length}___`;
@@ -1725,8 +1730,12 @@ function formatTextWithParagraphs(text) {
     return placeholder;
   });
   const escaped = escapeHtml(processedText);
+  const youtubeRegex = /https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+  const withYouTube = escaped.replace(youtubeRegex, (match, videoId) => {
+    return `<div class="video-embed"><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  });
   const urlRegex = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g;
-  const linkedText = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  const linkedText = withYouTube.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   const paragraphs = linkedText.split(/\n\n+/);
   let formatted = paragraphs.map((p) => p.trim()).filter((p) => p.length > 0).map((p) => `<p style="margin-bottom: 12px;">${p.replace(/\n/g, "<br>")}</p>`).join("");
   quotes.forEach((quote, index) => {
@@ -1737,6 +1746,9 @@ function formatTextWithParagraphs(text) {
       <div class="quote-content">${quote.content.replace(/\n/g, "<br>")}</div>
     </blockquote>`;
     formatted = formatted.replace(`___QUOTE_${index}___`, quoteHtml);
+  });
+  iframes.forEach((iframe, index) => {
+    formatted = formatted.replace(`___IFRAME_${index}___`, iframe);
   });
   return formatted || `<p>${escaped}</p>`;
 }
@@ -1878,6 +1890,8 @@ h1 { font-size: 24px; font-weight: 600; margin: 0; color: #0969da; }
 .quote-header a { color: #0969da; text-decoration: none; }
 .quote-header a:hover { text-decoration: underline; }
 .quote-content { color: #24292f; font-size: 14px; line-height: 1.5; font-style: italic; }
+.video-embed { margin: 16px 0; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
+.video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 .answer-meta { color: #57606a !important; font-size: 12px; display: flex; gap: 12px; align-items: center; }
 .answer-meta span { color: #57606a !important; }
 .answer-meta a { color: #24292f !important; }
@@ -3029,9 +3043,16 @@ var JS = `class App {
   formatTextWithParagraphs(text) {
     if (!text) return '';
     
+    // Extract existing iframes (like YouTube embeds) before escaping
+    const iframes = [];
+    let processedText = text.replace(/<iframe[^>]*>.*?<\\/iframe>/gi, (match) => {
+      const placeholder = \`___IFRAME_\${iframes.length}___\`;
+      iframes.push(match);
+      return placeholder;
+    });
+    
     // Parse quote blocks first (before escaping) - match author up to first comma
     const quoteRegex = /\\[quote="([^,]+),\\s*post:(\\d+),\\s*topic:(\\d+)"\\]([\\s\\S]*?)\\[\\/quote\\]/g;
-    let processedText = text;
     
     // Replace quote blocks with placeholders
     const quotes = [];
@@ -3049,9 +3070,15 @@ var JS = `class App {
     // Escape the remaining text
     const escaped = this.escapeHtml(processedText);
     
-    // Convert URLs to clickable links (after escaping)
+    // Convert YouTube URLs to embeds (before general link conversion)
+    const youtubeRegex = /https?:\\/\\/(?:www\\.)?(?:youtube\\.com\\/(?:watch\\?v=|embed\\/)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})/g;
+    const withYouTube = escaped.replace(youtubeRegex, (match, videoId) => {
+      return \`<div class="video-embed"><iframe width="560" height="315" src="https://www.youtube.com/embed/\${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\`;
+    });
+    
+    // Convert remaining URLs to clickable links (after YouTube conversion)
     const urlRegex = /(https?:\\/\\/[^\\s<]+[^<.,:;"')\\]\\s])/g;
-    const linkedText = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    const linkedText = withYouTube.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
     
     // Process paragraphs
     const paragraphs = linkedText.split(/\\n\\n+/);
@@ -3070,6 +3097,11 @@ var JS = `class App {
         <div class="quote-content">\${quote.content.replace(/\\n/g, '<br>')}</div>
       </blockquote>\`;
       formatted = formatted.replace(\`___QUOTE_\${index}___\`, quoteHtml);
+    });
+    
+    // Restore extracted iframes
+    iframes.forEach((iframe, index) => {
+      formatted = formatted.replace(\`___IFRAME_\${index}___\`, iframe);
     });
     
     return formatted || \`<p>\${escaped}</p>\`;
@@ -3609,7 +3641,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-BHzoKh/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-xNSpQS/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3640,7 +3672,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-BHzoKh/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-xNSpQS/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
