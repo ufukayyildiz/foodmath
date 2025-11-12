@@ -1097,7 +1097,7 @@ function handleRobotsTxt(env, corsHeaders) {
   const robots = `User-agent: *
 Allow: /
 
-Sitemap: https://mevzugida.com/sitemap.xml
+Sitemap: https://mevzugida.comclear un/sitemap.xml
 Sitemap: https://mevzugida.com/q-sitemap.xml`;
   return new Response(robots, {
     headers: {
