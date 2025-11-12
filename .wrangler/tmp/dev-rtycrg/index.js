@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-cl1mgs/checked-fetch.js
+// .wrangler/tmp/bundle-Yiorap/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -1622,9 +1622,9 @@ ${structuredData}
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
   ${structuredDataScript}
-  <link rel="preload" href="/styles.css?v=8" as="style">
-  <link rel="stylesheet" href="/styles.css?v=8">
-  <link rel="preload" href="/app.js?v=8" as="script">
+  <link rel="preload" href="/styles.css?v=9" as="style">
+  <link rel="stylesheet" href="/styles.css?v=9">
+  <link rel="preload" href="/app.js?v=9" as="script">
 </head>
 <body>
   <div class="container">
@@ -1665,7 +1665,7 @@ ${structuredData}
       menu.classList.toggle('active');
     }
   <\/script>
-  <script defer src="/app.js?v=8"><\/script>
+  <script defer src="/app.js?v=9"><\/script>
 </body>
 </html>`;
 }
@@ -2239,6 +2239,24 @@ var JS = `class App {
     
     try {
       const response = await fetch(\`/api/q/\${questionId}\`);
+      
+      // Handle 404 - Question not found
+      if (response.status === 404) {
+        this.app.innerHTML = \`
+          <div style="text-align: center; padding: 80px 20px; max-width: 600px; margin: 0 auto;">
+            <h1 style="font-size: 72px; margin: 0; color: #d1242f;">404</h1>
+            <h2 style="font-size: 28px; margin: 16px 0; color: #24292f;">\${this.t('error.question_not_found', 'Question Not Found')}</h2>
+            <p style="font-size: 16px; color: #57606a; margin-bottom: 32px;">
+              \${this.t('error.question_deleted', 'This question may have been deleted or does not exist.')}
+            </p>
+            <a href="/" class="btn-primary" style="display: inline-block; padding: 12px 24px; background: #28a745; color: #fff; text-decoration: none; font-weight: 600; border-radius: 6px;">
+              \${this.t('button.back_home', 'Back to Home')}
+            </a>
+          </div>
+        \`;
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.error) {
@@ -3563,7 +3581,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-cl1mgs/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-Yiorap/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3594,7 +3612,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-cl1mgs/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-Yiorap/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

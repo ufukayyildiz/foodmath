@@ -11,6 +11,15 @@ This project is a fast, minimal, and modern question & answer platform built for
   - Created `loadAndEditQuestion()` and `loadAndEditAnswer()` methods to fetch data and show edit modals
   - Implemented `bindAdminActions()` method that injects buttons for both SSR and client-rendered content
   - Works seamlessly with existing admin panel functionality
+- **CONFIRMED**: Cascade delete for questions
+  - When a question is deleted, all related answers are automatically deleted
+  - All votes for the question and its answers are also deleted
+  - Prevents orphaned data in the database
+- **ADDED**: Proper 404 page for deleted/missing questions
+  - Beautiful styled 404 page with large "404" heading
+  - Translatable error messages in English and Turkish
+  - "Back to Home" button to return to main page
+  - Returns proper HTTP 404 status code
 
 ## Previous Changes (November 11, 2025)
 - **ADDED**: Email validation function for admin user creation
