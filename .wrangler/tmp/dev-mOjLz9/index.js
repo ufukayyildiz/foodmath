@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-XYAMPx/checked-fetch.js
+// .wrangler/tmp/bundle-BHzoKh/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -2127,8 +2127,8 @@ var JS = `class App {
       return;
     }
 
-    // Find all questions and answers with data attributes
-    const targets = document.querySelectorAll('[data-type="question"], [data-type="answer"]');
+    // Only target question and answer detail pages, not home page listings
+    const targets = document.querySelectorAll('.question-detail[data-type="question"], .answer-detail[data-type="answer"]');
     
     targets.forEach(target => {
       // Skip if already has admin buttons
@@ -3609,7 +3609,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-XYAMPx/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-BHzoKh/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -3640,7 +3640,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-XYAMPx/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-BHzoKh/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

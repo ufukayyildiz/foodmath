@@ -2429,8 +2429,8 @@ const JS = `class App {
       return;
     }
 
-    // Find all questions and answers with data attributes
-    const targets = document.querySelectorAll('[data-type="question"], [data-type="answer"]');
+    // Only target question and answer detail pages, not home page listings
+    const targets = document.querySelectorAll('.question-detail[data-type="question"], .answer-detail[data-type="answer"]');
     
     targets.forEach(target => {
       // Skip if already has admin buttons
