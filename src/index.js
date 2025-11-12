@@ -1751,7 +1751,20 @@ async function renderQuestionPage(env, questionId, corsHeaders) {
     });
 
     if (!question) {
-      return new Response(getBaseHTML('Question not found', 'The question you are looking for does not exist.', siteTitle, siteTagline, lang), {
+      const notFoundContent = `
+        <div style="text-align: center; padding: 80px 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="font-size: 72px; margin: 0; color: #d1242f;">404</h1>
+          <h2 style="font-size: 28px; margin: 16px 0; color: #24292f;">${translations['error.question_not_found'] || 'Question Not Found'}</h2>
+          <p style="font-size: 16px; color: #57606a; margin-bottom: 32px;">
+            ${translations['error.question_deleted'] || 'This question may have been deleted or does not exist.'}
+          </p>
+          <a href="/" class="btn-primary" style="display: inline-block; padding: 12px 24px; background: #28a745; color: #fff; text-decoration: none; font-weight: 600; border-radius: 6px;">
+            ${translations['button.back_home'] || 'Back to Home'}
+          </a>
+        </div>
+      `;
+      return new Response(getBaseHTML('404 - Question Not Found', 'The question you are looking for does not exist.', siteTitle, siteTagline, lang, notFoundContent, translations), {
+        status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'text/html' },
       });
     }
