@@ -41,8 +41,8 @@ The database is already configured in `wrangler.toml`:
 ```toml
 [[d1_databases]]
 binding = "DB"
-database_name = "foodmath"
-database_id = "3f5d6426-1f86-4f4f-94bd-5a8de12b0af9"
+database_name = "xxxxxxxxxxxxx"
+database_id = "xxxxxxx"
 ```
 
 ### Step 4: Development
