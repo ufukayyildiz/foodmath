@@ -1,3 +1,6 @@
+MADE WITH [REPLIT](https://replit.com/refer/devtr)
+
+
 # FoodMath - Food Science Q&A Platform
 
 A fast, minimal, and modern question & answer platform built on Cloudflare Workers with D1 database, focused on food science and mathematics.
